@@ -7,26 +7,31 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
-    Button addWorkoutButton;
+public class ViewWorkouts extends ActionBarActivity {
+    TextView idView;
+    EditText workoutBox;
+    EditText descriptionBox;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_view_workouts);
 
-        // Add listener to buttons
-        ((Button)findViewById(R.id.btAddWorkout)).setOnClickListener(new ButtonClickListener());
-        ((Button)findViewById(R.id.btViewLogs)).setOnClickListener(new ButtonClickListener());
+        idView = (TextView) findViewById(R.id.tvId);
+        workoutBox = (EditText) findViewById(R.id.tvName);
+        descriptionBox = (EditText) findViewById(R.id.tvDesc);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_view_workouts, menu);
         return true;
     }
 
@@ -45,22 +50,17 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Listener for buttons
-    private class ButtonClickListener implements View.OnClickListener {
-        public void onClick(View v) {
-            Button b = (Button) (v);
-            int buttonId = b.getId();
+    public void lookupWorkout (View view) {
+        MyDBHandler dbHandler = new MyDBHandler(this, null, null, 1);
 
-            switch (buttonId) {
-                case (R.id.btAddWorkout):
-                    Intent intent = new Intent(MainActivity.this, AddWorkoutPage.class);
-                    startActivity(intent);
-                    break;
-                case (R.id.btViewLogs):
-                    intent = new Intent(MainActivity.this, ViewWorkouts.class);
-                    startActivity(intent);
-                    break;
-            }
+        Workout workout =
+                dbHandler.findWorkout(workoutBox.getText().toString());
+
+        if (workout != null) {
+            idView.setText(String.valueOf(workout.getId()));
+            descriptionBox.setText(String.valueOf(workout.getDescription()));
+        } else {
+            idView.setText("No Match Found");
         }
     }
 }
