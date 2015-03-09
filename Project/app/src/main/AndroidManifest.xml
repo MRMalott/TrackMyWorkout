@@ -17,11 +17,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddWorkoutPage"
+            android:name=".Workouts.AddWorkoutPage"
             android:label="@string/title_activity_add_workout_page" >
         </activity>
         <activity
-            android:name=".ViewWorkouts"
+            android:name=".Workouts.ViewWorkouts"
             android:label="@string/title_activity_view_workouts" >
         </activity>
     </application>

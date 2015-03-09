@@ -1,14 +1,16 @@
-package com.home.moorre.myapplication;
+package com.home.moorre.myapplication.Workouts;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.home.moorre.myapplication.Classes.Workout;
+import com.home.moorre.myapplication.MyDBHandler;
+import com.home.moorre.myapplication.R;
 
 
 public class ViewWorkouts extends ActionBarActivity {
