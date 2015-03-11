@@ -22,12 +22,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.home.moorre.myapplication.Classes.Workout;
 import com.home.moorre.myapplication.MyDBHandler;
@@ -46,11 +48,12 @@ public class AddWorkoutPage extends ActionBarActivity {
     EditText descriptionBox;
     // workout type
     Spinner workoutTypeDrop;
-    String workoutTypeDropValue;
+    String workoutTypeDropValue = "anaerobic";
     // muscle group
     Spinner muscleGroupDrop;
-    String muscleGroupDropValue;
+    String muscleGroupDropValue = "trapezius";
     // pictures
+    LinearLayout imageLayout;
     ImageView mainImageView;
     Button addImageBt;
     ArrayList<Bitmap> images;
@@ -60,7 +63,6 @@ public class AddWorkoutPage extends ActionBarActivity {
     // sub regions
     LinearLayout subRegionsLayoutRight;
     LinearLayout subRegionsLayoutLeft;
-    String subRegionDropValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,12 +88,12 @@ public class AddWorkoutPage extends ActionBarActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent)
             {
-
+                workoutTypeDropValue = "anaerobic";
             }
         });
 
         muscleGroupDrop = (Spinner)findViewById(R.id.ddMuscleGroup);
-        ArrayAdapter<String> muscleGroupAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, MyDBHandler.GROUPING_IDS.keySet().toArray(new String[MyDBHandler.GROUPING_IDS.size()]));
+        final ArrayAdapter<String> muscleGroupAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, MyDBHandler.GROUPING_IDS.keySet().toArray(new String[MyDBHandler.GROUPING_IDS.size()]));
         workoutDropAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         muscleGroupDrop.setAdapter(muscleGroupAdapter);
         muscleGroupDrop.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -99,36 +101,42 @@ public class AddWorkoutPage extends ActionBarActivity {
             public void onItemSelected(AdapterView<?> parent, View selectedItem, int pos, long id)
             {
                 Object item = parent.getItemAtPosition(pos);
-                workoutTypeDropValue = item.toString();
+                muscleGroupDropValue = item.toString();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent)
             {
-
+                muscleGroupDropValue = "trapezius";
             }
         });
 
-        //MyDBHandler.REGION_IDS.keySet().toArray(new String[MyDBHandler.REGION_IDS.size()])
-        mainImageView = (ImageView) findViewById(R.id.mainImageView);
+        imageLayout = (LinearLayout) findViewById(R.id.imageField);
         addImageBt = (Button) findViewById(R.id.addImgBt);
         addImageBt.setOnClickListener(new addImageListener());
         images = new ArrayList<Bitmap>();
 
         /*mainRegionsLayoutLeft = (LinearLayout) findViewById(R.id.mainRegionsLeft);
-        mainRegionsLayoutRight = (LinearLayout) findViewById(R.id.mainRegionsRight);
-
+        mainRegionsLayoutRight = (LinearLayout) findViewById(R.id.mainRegionsRight);*/
+        int[] mainCheckboxes = {R.id.mainChk1, R.id.mainChk2, R.id.mainChk3, R.id.mainChk4, R.id.mainChk5, R.id.mainChk6, R.id.mainChk7,
+                R.id.mainChk8, R.id.mainChk9, R.id.mainChk10, R.id.mainChk11, R.id.mainChk12, R.id.mainChk13, R.id.mainChk14};
+        int[] subCheckboxes = {R.id.subChk1, R.id.subChk2, R.id.subChk3, R.id.subChk4, R.id.subChk5, R.id.subChk6, R.id.subChk7,
+                R.id.mainChk8, R.id.subChk9, R.id.subChk10, R.id.subChk11, R.id.subChk12, R.id.subChk13, R.id.subChk14};
+        int checkboxIndex = 0;
         for (String region : MyDBHandler.REGION_IDS.keySet().toArray(new String[MyDBHandler.REGION_IDS.size()])) {
-            CheckBox chk = new CheckBox(this);
-            chk.setText(region);
+            // Get checkbox views
+            CheckBox mainChk = (CheckBox) findViewById(mainCheckboxes[checkboxIndex]);
+            CheckBox subChk = (CheckBox) findViewById(subCheckboxes[checkboxIndex]);
 
-        }*/
+            // set text
+            mainChk.setText(region);
+            subChk.setText(region);
+
+            checkboxIndex++;
+        }
 
         /*subRegionsLayoutLeft = (LinearLayout) findViewById(R.id.subRegionsLeft);
-        subRegionsLayoutRight = (LinearLayout) findViewById(R.id.subRegionsRight);
-
-        MyDBHandler.REGION_IDS.keySet().toArray(new String[MyDBHandler.REGION_IDS.size()])*/
-
+        subRegionsLayoutRight = (LinearLayout) findViewById(R.id.subRegionsRight);*/
     }
 
 
@@ -154,8 +162,10 @@ public class AddWorkoutPage extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Click listeners
-    /* https://www.youtube.com/watch?v=S8E5GdF0RBA */
+    /*
+     Click listeners
+      */
+
     private class addImageListener implements View.OnClickListener {
         public final static int addImgCode = 101;
         @Override
@@ -185,14 +195,19 @@ public class AddWorkoutPage extends ActionBarActivity {
                     e.printStackTrace();
                 }
 
-                // Set image as the main image
-                if (mainImageView.getVisibility() == ImageView.INVISIBLE) {
-                    mainImageView.setImageBitmap(bm);
-                    mainImageView.setVisibility(ImageView.VISIBLE); // make visible
-                }
+                ImageView imageView = new ImageView(this);
+                imageView.setImageBitmap(bm);
+                imageView.setMaxWidth(50);
+                imageView.setMinimumWidth(50);
+                imageView.setMaxHeight(50);
+                imageView.setMinimumHeight(50);
+
+                imageLayout.addView(imageView);
 
                 // Add image to listing
                 images.add(bm);
+
+                // Tell user image was added
             }
         }
     }
@@ -206,12 +221,71 @@ public class AddWorkoutPage extends ActionBarActivity {
 
         String desc = descriptionBox.getText().toString();
         String name = workoutBox.getText().toString();
-        String workoutType = workoutTypeDrop.get
+        int workoutTypeId = MyDBHandler.WORKOUT_TYPE_IDS.get(workoutTypeDropValue); //workout type
+        int muscleGroupId = MyDBHandler.GROUPING_IDS.get(muscleGroupDropValue); // muscle group
+        // images
+        ArrayList<String> selectedMainRegions = getRegionCheckboxValues(true);
+        ArrayList<String> selectedSubRegions = getRegionCheckboxValues(false);
 
+        Workout workout = new Workout();
+        workout.setName(name);
+        workout.setDescription(desc);
+        workout.setWorkoutTypeId(workoutTypeId);
+        workout.setMuscleGroupId(muscleGroupId);
+        workout.setPictures(images);
+        if (images.isEmpty()) {
+            workout.setCheckPictures(false);
+        } else {
+            workout.setCheckPictures(true);
+        }
+        workout.setMainRegions(selectedMainRegions);
+        if (selectedMainRegions.isEmpty()) {
+            workout.setCheckMainRegions(false);
+        } else {
+            workout.setCheckSubRegions(true);
+        }
+        workout.setSubRegions(selectedSubRegions);
+        if (selectedSubRegions.isEmpty()) {
+            workout.setCheckSubRegions(false);
+        } else {
+            workout.setCheckSubRegions(true);
+        }
 
-        dbHandler.addWorkout(new Workout(name, desc));
+        dbHandler.addWorkout(workout);
 
         workoutBox.setText("");
         descriptionBox.setText("");
+    }
+
+    /**
+     * Get what checkboxes where selected
+     * @param main checks main boxes if true, sub boxes if not
+     * @return ArrayList<String> of selected regions or empty ArrayList
+     */
+    private ArrayList<String> getRegionCheckboxValues(boolean main) {
+        ArrayList<String> selectedRegions = new ArrayList<String>(14);
+        if (main) {
+            int[] mainCheckboxes = {R.id.mainChk1, R.id.mainChk2, R.id.mainChk3, R.id.mainChk4, R.id.mainChk5, R.id.mainChk6, R.id.mainChk7,
+                    R.id.mainChk8, R.id.mainChk9, R.id.mainChk10, R.id.mainChk11, R.id.mainChk12, R.id.mainChk13, R.id.mainChk14};
+            for (int checkboxId = 0; checkboxId < mainCheckboxes.length; checkboxId++) {
+                CheckBox chk = (CheckBox) findViewById(mainCheckboxes[checkboxId]);
+                // If selected add the region
+                if (chk.isChecked()) {
+                    selectedRegions.add(chk.getText().toString());
+                }
+            }
+        } else {
+            int[] subCheckboxes = {R.id.subChk1, R.id.subChk2, R.id.subChk3, R.id.subChk4, R.id.subChk5, R.id.subChk6, R.id.subChk7,
+                    R.id.mainChk8, R.id.subChk9, R.id.subChk10, R.id.subChk11, R.id.subChk12, R.id.subChk13, R.id.subChk14};
+            for (int checkboxId = 0; checkboxId < subCheckboxes.length; checkboxId++) {
+                CheckBox chk = (CheckBox) findViewById(subCheckboxes[checkboxId]);
+                // If selected add the region
+                if (chk.isChecked()) {
+                    selectedRegions.add(chk.getText().toString());
+                }
+            }
+        }
+
+        return selectedRegions;
     }
 }

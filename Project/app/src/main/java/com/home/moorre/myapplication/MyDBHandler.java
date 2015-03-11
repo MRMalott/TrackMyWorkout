@@ -21,7 +21,7 @@ package com.home.moorre.myapplication;
  * Created by Moorre on 2/5/2015.
  */
 public class MyDBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 6;
     private static  final String DATABASE_NAME = "healthDB.db";
 
     private static  final String TABLE_WORKOUTS = "workouts";
@@ -111,10 +111,11 @@ public class MyDBHandler extends SQLiteOpenHelper {
     @Override
     public  void onCreate(SQLiteDatabase db) {
         String CREATE_WORKOUTS_TABLE = "Create table " + TABLE_WORKOUTS + "(" +
-                COL_ID + " integer not null auntoincrement, " +
+                COL_ID + " integer not null, " +
                 COL_NAME + " text primary key not null," +
                 COL_DESC + " text," +
-
+                COL_WORKOUT_ID+ " integer references " + TABLE_WORKOUTS + "(" + COL_ID + ")," +
+                COL_MUSCLE_GROUP_ID + " integer references " + TABLE_MUSCLE_GROUPS + "(" + COL_ID + ")," +
                 COL_CHECK_PICTURES + " integer," +
                 COL_CHECK_MAIN_REGIONS + " integer," +
                 COL_CHECK_SUB_REGIONS + " integer)";

@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -106,20 +106,21 @@
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown" />
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:fillViewport="false">
 
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:id="@+id/mainImageView"
-                android:layout_gravity="center_horizontal"
-                android:adjustViewBounds="false"
-                android:visibility="invisible" />
-        </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/imageField" >
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+
 
         <LinearLayout
             android:orientation="horizontal"
@@ -133,6 +134,18 @@
                 android:text="Add Picture"
                 android:id="@+id/addImgBt"
                 android:onClick="" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remove Image"
+                android:id="@+id/removePicture" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Make Primary"
+                android:id="@+id/makePrimaryPicture" />
         </LinearLayout>
 
         <LinearLayout
@@ -146,29 +159,92 @@
                 android:text="Main Regions"  />
         </LinearLayout>
 
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinner"
-            android:layout_gravity="center_horizontal"
-            android:touchscreenBlocksFocus="false" />
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:id="@+id/mainRegionsLeft">
 
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk1" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk2" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk3" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk4" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk5" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk6" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk7" />
+
             </LinearLayout>
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/mainRegionsRight" >
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk8"/>
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk9" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk10" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk11" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk12" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk13" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mainChk14" />
 
             </LinearLayout>
         </LinearLayout>
@@ -189,17 +265,87 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:id="@+id/subRegionsLeft">
 
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/subChk1"/>
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/subChk2"/>
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/subChk3" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/subChk4" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/subChk5" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/subChk6" />
+
+                <CheckBox
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/subChk7" />
+
                 </LinearLayout>
                 <LinearLayout
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/subRegionsRight" >
+
+                    <CheckBox
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/subChk8" />
+
+                    <CheckBox
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/subChk9" />
+
+                    <CheckBox
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/subChk10" />
+
+                    <CheckBox
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/subChk11" />
+
+                    <CheckBox
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/subChk12" />
+
+                    <CheckBox
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/subChk13" />
+
+                    <CheckBox
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/subChk14" />
 
                     </LinearLayout>
         </LinearLayout>
@@ -220,4 +366,5 @@
         </LinearLayout>
 
     </LinearLayout>
-</RelativeLayout>
+
+    </ScrollView>
