@@ -1,15 +1,16 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.home.moorre.myapplication.Workouts.ViewWorkouts">
+    tools:context="com.home.moorre.myapplication.Workouts.AddWorkoutPage">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:id="@+id/mainHolder" >
 
         <LinearLayout
             android:orientation="horizontal"
@@ -19,35 +20,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ID"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvId" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name"
+                android:text="Lookup by name"
                 android:layout_marginEnd="2dp"
                 android:layout_marginRight="2dp" />
 
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvName"
-                android:width="20sp"
-                android:inputType="text" />
+                android:id="@+id/lookupTv" />
 
         </LinearLayout>
 
@@ -57,98 +37,23 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Description"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp" />
-
-            <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tvDesc"
-                android:width="20sp" />
+                android:id="@+id/errorTv"/>
+
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Photos"
-                android:id="@+id/tvPhotos"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp" />
-
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select Photos"
-                android:id="@+id/btPhotos" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Main Regions"
-                android:id="@+id/tvMainRegion"
-                android:singleLine="false"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Regions"
-                android:id="@+id/btMainRegion"
-                android:singleLine="false" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sub Regions"
-                android:id="@+id/tvSubRegion"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Regions"
-                android:id="@+id/btSubRegion" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal" >
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Find Workout"
-                android:id="@+id/button2"
-                android:onClick="lookupWorkout" />
+                android:text="Lookup"
+                android:id="@+id/lookupBt" />
 
         </LinearLayout>
 
     </LinearLayout>
-
-</RelativeLayout>
+</ScrollView>

@@ -12,7 +12,7 @@ public class Workout {
     private String _name, _description;
     private ArrayList<Bitmap> _pictures;
     private int  _workoutTypeId, _muscleGroupId;
-    private ArrayList<String> _mainRegions, subRegions;
+    private ArrayList<String> _mainRegions, _subRegions;
     private boolean _checkPictures, _checkMainRegions,  _checkSubRegions;
     // has foreign keys to _pictures and regions tables
 
@@ -89,11 +89,11 @@ public class Workout {
     }
 
     public ArrayList<String> getSubRegions() {
-        return subRegions;
+        return _subRegions;
     }
 
     public void setSubRegions(ArrayList<String> subRegions) {
-        this.subRegions = new ArrayList<String>(subRegions);
+        this._subRegions = new ArrayList<String>(subRegions);
     }
 
     public boolean getCheckPictures() {

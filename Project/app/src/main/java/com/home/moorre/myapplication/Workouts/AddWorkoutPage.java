@@ -3,6 +3,7 @@ package com.home.moorre.myapplication.Workouts;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +14,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,12 +60,6 @@ public class AddWorkoutPage extends ActionBarActivity {
     ImageView mainImageView;
     Button addImageBt;
     ArrayList<Bitmap> images;
-    // main regions
-    LinearLayout mainRegionsLayoutRight;
-    LinearLayout mainRegionsLayoutLeft;
-    // sub regions
-    LinearLayout subRegionsLayoutRight;
-    LinearLayout subRegionsLayoutLeft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +80,7 @@ public class AddWorkoutPage extends ActionBarActivity {
             {
                 Object item = parent.getItemAtPosition(pos);
                 workoutTypeDropValue = item.toString();
+                System.out.println("Selected " + workoutTypeDropValue);
             }
 
             @Override
@@ -102,6 +100,7 @@ public class AddWorkoutPage extends ActionBarActivity {
             {
                 Object item = parent.getItemAtPosition(pos);
                 muscleGroupDropValue = item.toString();
+                System.out.println("Selected " + muscleGroupDropValue);
             }
 
             @Override
@@ -116,12 +115,10 @@ public class AddWorkoutPage extends ActionBarActivity {
         addImageBt.setOnClickListener(new addImageListener());
         images = new ArrayList<Bitmap>();
 
-        /*mainRegionsLayoutLeft = (LinearLayout) findViewById(R.id.mainRegionsLeft);
-        mainRegionsLayoutRight = (LinearLayout) findViewById(R.id.mainRegionsRight);*/
         int[] mainCheckboxes = {R.id.mainChk1, R.id.mainChk2, R.id.mainChk3, R.id.mainChk4, R.id.mainChk5, R.id.mainChk6, R.id.mainChk7,
                 R.id.mainChk8, R.id.mainChk9, R.id.mainChk10, R.id.mainChk11, R.id.mainChk12, R.id.mainChk13, R.id.mainChk14};
         int[] subCheckboxes = {R.id.subChk1, R.id.subChk2, R.id.subChk3, R.id.subChk4, R.id.subChk5, R.id.subChk6, R.id.subChk7,
-                R.id.mainChk8, R.id.subChk9, R.id.subChk10, R.id.subChk11, R.id.subChk12, R.id.subChk13, R.id.subChk14};
+                R.id.subChk8, R.id.subChk9, R.id.subChk10, R.id.subChk11, R.id.subChk12, R.id.subChk13, R.id.subChk14};
         int checkboxIndex = 0;
         for (String region : MyDBHandler.REGION_IDS.keySet().toArray(new String[MyDBHandler.REGION_IDS.size()])) {
             // Get checkbox views
@@ -134,9 +131,6 @@ public class AddWorkoutPage extends ActionBarActivity {
 
             checkboxIndex++;
         }
-
-        /*subRegionsLayoutLeft = (LinearLayout) findViewById(R.id.subRegionsLeft);
-        subRegionsLayoutRight = (LinearLayout) findViewById(R.id.subRegionsRight);*/
     }
 
 
@@ -190,37 +184,56 @@ public class AddWorkoutPage extends ActionBarActivity {
                 } catch (FileNotFoundException e) {
                     Log.d("imgs", e.toString());
                     e.printStackTrace();
+                    Toast err = Toast.makeText(this, "Uploading the image failed", Toast.LENGTH_SHORT);
+                    err.show();
+                    return;
                 } catch (IOException e) {
                     Log.d("imgs", e.toString());
                     e.printStackTrace();
+                    Toast err = Toast.makeText(this, "Uploading the image failed", Toast.LENGTH_SHORT);
+                    err.show();
+                    return;
                 }
 
+                // Create image view
+                LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(100, 100);// width, height
                 ImageView imageView = new ImageView(this);
+                imageView.setLayoutParams(imgParams);
                 imageView.setImageBitmap(bm);
-                imageView.setMaxWidth(50);
-                imageView.setMinimumWidth(50);
-                imageView.setMaxHeight(50);
-                imageView.setMinimumHeight(50);
-
-                imageLayout.addView(imageView);
+                imageLayout.addView(imageView, imgParams);
 
                 // Add image to listing
                 images.add(bm);
 
                 // Tell user image was added
+                Toast success = Toast.makeText(this, "Uploaded the image", Toast.LENGTH_SHORT);
+                success.show();
             }
         }
     }
 
     /*
-    DBHandler
+    DBHandlers
      */
 
     public void newWorkout (View view) {
         MyDBHandler dbHandler = new MyDBHandler(this, null, null, 1);
 
-        String desc = descriptionBox.getText().toString();
-        String name = workoutBox.getText().toString();
+        // Assure name not taken already
+        boolean nameExists = true;
+        try {
+        } catch(Exception e) {
+            nameExists = false;
+        }
+
+        if(nameExists) {
+            Toast err = Toast.makeText(this, "Name already exists", Toast.LENGTH_SHORT);
+            err.show();
+            return;
+        }
+
+        String desc = descriptionBox.getText().toString().trim();
+        String name = cleanName(workoutBox.getText().toString());
         int workoutTypeId = MyDBHandler.WORKOUT_TYPE_IDS.get(workoutTypeDropValue); //workout type
         int muscleGroupId = MyDBHandler.GROUPING_IDS.get(muscleGroupDropValue); // muscle group
         // images
@@ -242,7 +255,7 @@ public class AddWorkoutPage extends ActionBarActivity {
         if (selectedMainRegions.isEmpty()) {
             workout.setCheckMainRegions(false);
         } else {
-            workout.setCheckSubRegions(true);
+            workout.setCheckMainRegions(true);
         }
         workout.setSubRegions(selectedSubRegions);
         if (selectedSubRegions.isEmpty()) {
@@ -251,10 +264,16 @@ public class AddWorkoutPage extends ActionBarActivity {
             workout.setCheckSubRegions(true);
         }
 
-        dbHandler.addWorkout(workout);
-
-        workoutBox.setText("");
-        descriptionBox.setText("");
+        // Try to add the workout
+        try {
+            dbHandler.addWorkout(workout);
+            Toast good = Toast.makeText(this, "Added workout", Toast.LENGTH_SHORT);
+            good.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast err = Toast.makeText(this, "Couldn't add workout", Toast.LENGTH_SHORT);
+            err.show();
+        }
     }
 
     /**
@@ -276,7 +295,7 @@ public class AddWorkoutPage extends ActionBarActivity {
             }
         } else {
             int[] subCheckboxes = {R.id.subChk1, R.id.subChk2, R.id.subChk3, R.id.subChk4, R.id.subChk5, R.id.subChk6, R.id.subChk7,
-                    R.id.mainChk8, R.id.subChk9, R.id.subChk10, R.id.subChk11, R.id.subChk12, R.id.subChk13, R.id.subChk14};
+                    R.id.subChk8, R.id.subChk9, R.id.subChk10, R.id.subChk11, R.id.subChk12, R.id.subChk13, R.id.subChk14};
             for (int checkboxId = 0; checkboxId < subCheckboxes.length; checkboxId++) {
                 CheckBox chk = (CheckBox) findViewById(subCheckboxes[checkboxId]);
                 // If selected add the region
@@ -285,7 +304,15 @@ public class AddWorkoutPage extends ActionBarActivity {
                 }
             }
         }
-
         return selectedRegions;
     }
+
+    /*
+    Helpers
+     */
+
+    public String cleanName(String name) {
+        return name.trim().toLowerCase();
+    }
+
 }
