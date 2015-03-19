@@ -1,4 +1,4 @@
-package com.home.moorre.myapplication;
+package com.home.moorre.myapplication.DB;
 
         import android.content.ContentValues;
         import android.content.Context;
@@ -183,73 +183,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
             db.insert(TABLE_WORKOUT_TYPES, null, workoutTypeVals);
         }
 
-
-        Workout workout = new Workout();
-        workout.setId(0);
-        workout.setName("push up");
-        workout.setDescription("Get down push up");
-        workout.setPictures(new ArrayList<Bitmap>());
-        workout.setCheckMainRegions(true);
-        workout.setCheckSubRegions(true);
-        workout.setCheckPictures(false);
-        workout.setMuscleGroupId(2);
-        workout.setWorkoutTypeId(0);
-        ArrayList<String> mainregions = new ArrayList<String>(2);
-        mainregions.add("triceps");
-        mainregions.add("pectorals");
-        workout.setMainRegions(mainregions);
-        ArrayList<String> subregions = new ArrayList<String>(2);
-        subregions.add("deltoids");
-        subregions.add("abs");
-        workout.setSubRegions(subregions);
-        ContentValues workoutVals = new ContentValues();
-        workoutVals.put(COL_ID, 0);
-        workoutVals.put(COL_NAME, workout.getName());
-        workoutVals.put(COL_DESC, workout.getDescription());
-        workoutVals.put(COL_WORKOUT_TYPE_ID, workout.getWorkoutTypeId());
-        workoutVals.put(COL_MUSCLE_GROUP_ID, workout.getMuscleGroupId());
-        workoutVals.put(COL_CHECK_PICTURES, workout.getCheckPictures());
-        workoutVals.put(COL_CHECK_MAIN_REGIONS, workout.getCheckMainRegions());
-        workoutVals.put(COL_CHECK_SUB_REGIONS, workout.getCheckSubRegions());
-        try {
-            db.insert(TABLE_WORKOUTS, null, workoutVals);
-        }catch (Exception e) {
-            System.out.println("Couldn't add push up");
-            e.printStackTrace();
-        }
-
-        ContentValues a = new ContentValues();
-        a.put(COL_WORKOUT_ID, 1);
-        a.put(COL_REGION_ID, 3);
-        a.put(COL_MAIN, 1); // is a main region
-        try {
-            db.insert(TABLE_WORKOUT_REGIONS, null, a);
-        }catch (Exception e) {
-            System.out.println("Couldn't add a");
-            e.printStackTrace();
-        }
-
-        ContentValues c = new ContentValues();
-        c.put(COL_WORKOUT_ID, 1);
-        c.put(COL_REGION_ID, 4);
-        c.put(COL_MAIN, 1); // is a main region
-        try {
-            db.insert(TABLE_WORKOUT_REGIONS, null, c);
-        }catch (Exception e) {
-            System.out.println("Couldn't add c");
-            e.printStackTrace();
-        }
-
-        ContentValues b = new ContentValues();
-        b.put(COL_WORKOUT_ID, 1);
-        b.put(COL_REGION_ID, 2);
-        b.put(COL_MAIN, 0); // is a main region
-        try {
-            db.insert(TABLE_WORKOUT_REGIONS, null, b);
-        }catch (Exception e) {
-            System.out.println("Couldn't add b");
-            e.printStackTrace();
-        }
+        //PopulateWorkouts.generateWorkouts(db);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.home.moorre.myapplication.Workouts;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,14 +8,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.home.moorre.myapplication.Classes.Workout;
-import com.home.moorre.myapplication.MyDBHandler;
+import com.home.moorre.myapplication.DB.MyDBHandler;
 import com.home.moorre.myapplication.R;
 
 import java.util.ArrayList;
