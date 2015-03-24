@@ -6,6 +6,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_add_workout_page">AddWorkoutPage</string>
     <string name="title_activity_view_workouts">ViewWorkouts</string>
-
+    <string name="title_activity_main_log_page">MainLogPage</string>
+    <string name="title_activity_add_log_page">AddLogPage</string>
+    <string name="title_activity_view_log_page">ViewLogPage</string>
 
 </resources>

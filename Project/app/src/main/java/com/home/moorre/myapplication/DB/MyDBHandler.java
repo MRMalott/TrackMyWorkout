@@ -9,7 +9,10 @@ package com.home.moorre.myapplication.DB;
         import android.graphics.Bitmap;
         import android.graphics.BitmapFactory;
         import android.util.Base64;
+        import android.util.Log;
 
+        import com.home.moorre.myapplication.Classes.AnaerobicInput;
+        import com.home.moorre.myapplication.Classes.Set;
         import com.home.moorre.myapplication.Classes.Workout;
 
         import java.io.ByteArrayInputStream;
@@ -58,6 +61,28 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     private static final String TABLE_MUSCLE_GROUPS = "muscleGroups";
     // col id col name
+
+    private static final String TABLE_LOGS = "logs";
+    // col id col workoutId
+    private static final String COL_WORKOUT_DATE = "_workoutDate";
+    private static final String COL_CREATION_DATE = "_creationDate";
+    private static final String COL_IS_AEROBIC = "_isAerobic";
+    private static final String COL_NOTES = "_notes";
+
+    private static final String TABLE_AEROBIC_INPUTS = "aerobicInputs";
+    private static final String COL_LOG_ID = "_logId";
+    private static final String COL_SECONDS = "_seconds";
+    private static final String COL_FEET = "_feet";
+
+    private static final String TABLE_ANAEROBIC_INPUTS = "anaerobicInputs";
+    // col logId
+    private static final String COL_SET_ID = "_setId";
+
+    private static final String TABLE_SETS = "sets";
+    // col setsId
+    private static final String COL_SET_NUMBER = "_setNumber";
+    private static final String COL_REPS = "_reps";
+    private static final String COL_WEIGHT = "_weight";
 
     // Contains names to id values for different tables
     public static Map<String, Integer> REGION_IDS;
@@ -114,6 +139,9 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     @Override
     public  void onCreate(SQLiteDatabase db) {
+        /* -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+        Create workouts tables
+        -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_- */
         String CREATE_WORKOUTS_TABLE = "Create table " + TABLE_WORKOUTS + "(" +
                 COL_ID + " integer primary key autoincrement not null, " +
                 COL_NAME + " text not null," +
@@ -184,6 +212,39 @@ public class MyDBHandler extends SQLiteOpenHelper {
         }
 
         //PopulateWorkouts.generateWorkouts(db);
+
+        /* -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+        Create logs tables
+        -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_- */
+
+        String CREATE_LOGS_TABLE = "Create table " + TABLE_LOGS + "(" +
+                COL_ID + " integer primary key autoincrement not null," +
+                COL_WORKOUT_ID + " integer not null references " + TABLE_WORKOUTS + "(" + COL_ID + ")," +
+                COL_WORKOUT_DATE + "integer not null," +
+                COL_CREATION_DATE + " integer not null," +
+                COL_IS_AEROBIC + " integer not null," +
+                COL_NOTES + " text)";
+        db.execSQL(CREATE_LOGS_TABLE);
+
+        String CREATE_AEROBIC_TABLE = "Create table " + TABLE_AEROBIC_INPUTS + "(" +
+                COL_LOG_ID + " integer references " + TABLE_LOGS + "(" + COL_ID + ")," +
+                COL_SECONDS + " integer," +
+                COL_FEET + " integer)";
+        db.execSQL(CREATE_AEROBIC_TABLE);
+
+        String CREATE_ANAEROBIC_TABLE = "Create table " + TABLE_ANAEROBIC_INPUTS + "(" +
+                COL_LOG_ID + " integer references " + TABLE_LOGS + "(" + COL_ID + ")," +
+                COL_SET_ID + " integer autoincrement not null," +
+                "primary key (" + COL_LOG_ID + "," + COL_SET_ID +"))";
+        db.execSQL(CREATE_ANAEROBIC_TABLE);
+
+        String CREATE_SETS_TABLE = "Create tables " + TABLE_SETS + "(" +
+                COL_SET_ID + " integer references " + TABLE_ANAEROBIC_INPUTS + "(" + COL_SET_ID + ")," +
+                COL_SET_NUMBER + " integer not null," +
+                COL_REPS + " integer not null," +
+                COL_WEIGHT + " integer)";
+        db.execSQL(CREATE_SETS_TABLE);
+
     }
 
     @Override
@@ -293,12 +354,59 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void addFullLog(com.home.moorre.myapplication.Classes.Log log) throws Exception {
+        addLogInformation(log);
+
+        addInputs(log);
+    }
+
+    private void addLogInformation(com.home.moorre.myapplication.Classes.Log log) {
+        SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
+
+        ContentValues logInfo = new ContentValues();
+        logInfo.put(COL_WORKOUT_ID, log.getLoggedWorkout().getId());
+        logInfo.put(COL_WORKOUT_DATE, log.getWorkoutDate().getTime());
+        logInfo.put(COL_CREATION_DATE, log.getCreationDate().getTime());
+        logInfo.put(COL_NOTES, log.getNotes());
+
+        log.setId(findLastLogId());
+
+        db.insert(TABLE_LOGS, null, logInfo);
+
+        db.close();
+    }
+
+    private void addInputs(com.home.moorre.myapplication.Classes.Log log) {
+        SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
+
+        // Determine which type the 'set' is
+        if(log.isAerobic()) {
+            ContentValues aerobicInputs = new ContentValues();
+            aerobicInputs.put(COL_LOG_ID, log.getId());
+            aerobicInputs.put(COL_FEET, log.getAerobic().getFeet());
+            aerobicInputs.put(COL_SECONDS, log.getAerobic().getSeconds());
+            db.insert(TABLE_AEROBIC_INPUTS, null, aerobicInputs);
+        } else {
+            ArrayList<Set> sets = log.getAnaerobic().getSets();
+            for(int pos = 0; pos < sets.size(); pos++) {
+                ContentValues anaerobicInputs = new ContentValues();
+                anaerobicInputs.put(COL_LOG_ID, log.getId());
+                anaerobicInputs.put(COL_SET_NUMBER, pos + 1);
+                anaerobicInputs.put(COL_REPS, sets.get(pos).getReps());
+                anaerobicInputs.put(COL_WEIGHT, sets.get(pos).getWeight());
+                db.insert(TABLE_ANAEROBIC_INPUTS, null, anaerobicInputs);
+            }
+        }
+
+        db.close();
+    }
+
     /*
      get / select handlers
       */
     public int findWorkoutIdByName(String workoutName) throws NullPointerException {
         int id = 0; // will never return 0
-        SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
+        SQLiteDatabase db = this.getReadableDatabase(); // open db for writting
         String findIdQuery = "Select " + COL_ID + " from " + TABLE_WORKOUTS + " where " + COL_NAME + " = \"" + workoutName + "\"";
         Cursor cursor = db.rawQuery(findIdQuery, null);
         if (cursor.moveToFirst()) {
@@ -344,7 +452,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String query = "Select * from " + TABLE_WORKOUTS +  " where " +
                 COL_NAME + " = \"" + workoutName + "\"";
 
-        SQLiteDatabase db = this.getWritableDatabase(); // open db for reading
+        SQLiteDatabase db = this.getReadableDatabase(); // open db for reading
 
         // Get results from query
         // Can receive multiple rows!
@@ -375,7 +483,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String query = "Select " + COL_NAME + " from " + TABLE_WORKOUT_TYPES + " where " +
                 COL_ID + " = \"" + id + "\"";
 
-        SQLiteDatabase db = this.getWritableDatabase(); // open db for reading
+        SQLiteDatabase db = this.getReadableDatabase(); // open db for reading
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -395,7 +503,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String query = "Select " + COL_NAME + " from " + TABLE_MUSCLE_GROUPS + " where " +
                 COL_ID + " = \"" + id + "\"";
 
-        SQLiteDatabase db = this.getWritableDatabase(); // open db for reading
+        SQLiteDatabase db = this.getReadableDatabase(); // open db for reading
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -417,7 +525,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String query = "Select * from " + TABLE_PICTURES + " where " +
                 COL_WORKOUT_ID + " = \"" + id + "\"";
 
-        SQLiteDatabase db = this.getWritableDatabase(); // open db for reading
+        SQLiteDatabase db = this.getReadableDatabase(); // open db for reading
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -471,7 +579,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
                 TABLE_WORKOUT_REGIONS + "." + COL_REGION_ID + " = " + TABLE_REGIONS + "." + COL_ID +
                 " where " + TABLE_WORKOUT_REGIONS + "." + COL_WORKOUT_ID + " = " + "\"" + workoutId + "\"";
 
-        SQLiteDatabase db = this.getWritableDatabase(); // Open db for changing
+        SQLiteDatabase db = this.getReadableDatabase(); // Open db for changing
 
         // Get results query
         Cursor cursor = db.rawQuery(query, null);
@@ -500,6 +608,18 @@ public class MyDBHandler extends SQLiteOpenHelper {
         return regions;
     }
 
+    private int findLastLogId() {
+        SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
+        Cursor cursor = db.query(TABLE_LOGS, new String[]{COL_ID}, null, null, null, null, null);
+        cursor.moveToLast();
+        int id = cursor.getInt(0);
+        System.out.println("Found last id to be " + id);
+
+        cursor.close();
+        db.close();
+
+        return id;
+    }
 
     /*
      Deletion handlers

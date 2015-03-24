@@ -24,6 +24,18 @@
             android:name=".Workouts.ViewWorkouts"
             android:label="@string/title_activity_view_workouts" >
         </activity>
+        <activity
+            android:name=".Logs.MainLogPage"
+            android:label="@string/title_activity_main_log_page" >
+        </activity>
+        <activity
+            android:name=".Logs.AddLogPage"
+            android:label="@string/title_activity_add_log_page" >
+        </activity>
+        <activity
+            android:name=".ViewLogPage"
+            android:label="@string/title_activity_view_log_page" >
+        </activity>
     </application>
 
 </manifest>

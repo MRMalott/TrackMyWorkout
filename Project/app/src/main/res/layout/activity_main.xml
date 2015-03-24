@@ -39,6 +39,21 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="View Workouts"
+                android:id="@+id/btViewWorkout" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_margin="2dp"
+            android:id="@+id/layout5">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="View Logs"
                 android:id="@+id/btViewLogs" />
         </LinearLayout>
@@ -54,23 +69,9 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Button"
-                android:id="@+id/button3" />
+                android:text="Random Workout"
+                android:id="@+id/btRandomWorkout" />
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_margin="2dp"
-            android:id="@+id/layout4">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Button"
-                android:id="@+id/button4" />
-        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
