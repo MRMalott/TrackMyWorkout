@@ -33,7 +33,7 @@
             android:label="@string/title_activity_add_log_page" >
         </activity>
         <activity
-            android:name=".ViewLogPage"
+            android:name=".Logs.ViewLogPage"
             android:label="@string/title_activity_view_log_page" >
         </activity>
     </application>

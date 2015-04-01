@@ -11,9 +11,18 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.home.moorre.myapplication.Classes.AnaerobicInput;
+import com.home.moorre.myapplication.Classes.WorkoutLog;
+import com.home.moorre.myapplication.Classes.Set;
 import com.home.moorre.myapplication.DB.MyDBHandler;
 import com.home.moorre.myapplication.R;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class AddLogPage extends ActionBarActivity {
@@ -21,7 +30,7 @@ public class AddLogPage extends ActionBarActivity {
     Button addLogBt;
     Spinner workoutTypeDrop;
     String workoutTypeDropValue;
-
+    EditText notesEt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +38,11 @@ public class AddLogPage extends ActionBarActivity {
         setContentView(R.layout.activity_add_log_page);
 
         addLogDate = (DatePicker)findViewById(R.id.addLogDate);
-        addLogBt = (Button)findViewById(R.id.addLogBt);
 
-        workoutTypeDrop = (Spinner)findViewById(R.id.ddWorkoutType);
+        addLogBt = (Button)findViewById(R.id.addLogBt);
+        addLogBt.setOnClickListener(new addListener());
+
+        workoutTypeDrop = (Spinner)findViewById(R.id.logWorkoutType);
         ArrayAdapter<String> workoutDropAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, MyDBHandler.WORKOUT_TYPE_IDS.keySet().toArray(new String[MyDBHandler.WORKOUT_TYPE_IDS.size()]));
         workoutDropAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         workoutTypeDrop.setAdapter(workoutDropAdapter);
@@ -50,6 +61,8 @@ public class AddLogPage extends ActionBarActivity {
                 workoutTypeDropValue = "anaerobic";
             }
         });
+
+        notesEt = (EditText)findViewById(R.id.notesEV);
 
     }
 
@@ -74,5 +87,81 @@ public class AddLogPage extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public class addListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            if (checkInputs()) {
+                addNewLog();
+            }
+        }
+    }
+
+    public boolean checkInputs() {
+        // Check workout date
+        addLogDate = (DatePicker)findViewById(R.id.addLogDate);
+        try {
+            Date date = new Date(getDateFromDatePicker(addLogDate)); // from util to sql
+        } catch(Exception e) {
+            return false;
+        }
+
+        // Check inputs
+
+
+        return true;
+    }
+
+    /**
+     * Get the date from the date picker widget
+     * @param datePicker
+     * @return a java.util.Date
+     */
+    public static long getDateFromDatePicker(DatePicker datePicker) {
+        int day = datePicker.getDayOfMonth();
+        int month = datePicker.getMonth();
+        int year =  datePicker.getYear();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day, 0, 0, 0);
+
+        return calendar.getTimeInMillis() - calendar.getTimeInMillis()%1000;
+    }
+
+    public void addNewLog() {
+        WorkoutLog log = new WorkoutLog();
+        MyDBHandler db = new MyDBHandler(this, null, null, 1);
+
+        java.util.Date currentDate= new java.util.Date();
+
+        log.setCreationDate(currentDate.getTime());
+        log.setWorkoutDate(getDateFromDatePicker(addLogDate));
+
+        System.out.println("-----\nsaving date\n " + new Date(log.getWorkoutDate()).toString() + " " + new Date(log.getWorkoutDate()).getTime());
+
+        log.setIsAerobic(false);
+        log.setLoggedWorkout(db.findFullWorkoutById(1));
+
+        AnaerobicInput anaerobic = new AnaerobicInput();
+        ArrayList<Set> sets = new ArrayList<Set>(); // three sets
+        sets.add(new Set(4, 30));
+        sets.add(new Set(3, 40));
+        sets.add(new Set(2, 50));
+        anaerobic.setSets(sets);
+        log.setAnaerobic(anaerobic);
+        log.setNotes(notesEt.getText().toString());
+
+        try {
+            db.addFullLog(log);
+            Toast addLogSuccessToast = Toast.makeText(this, "Added Log", Toast.LENGTH_SHORT);
+            addLogSuccessToast.show();
+        }catch(Exception e) {
+            e.printStackTrace();
+            Toast addLogFailToast = Toast.makeText(this, "Couldn't add log", Toast.LENGTH_SHORT);
+            addLogFailToast.show();
+        } finally {
+            db.close();
+        }
     }
 }

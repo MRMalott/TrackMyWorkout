@@ -7,10 +7,14 @@ package com.home.moorre.myapplication.Classes;
 public class Set {
     private int weight, reps; //lbs
 
-    public void Set(int reps, int weight) {
+    public Set(int reps, int weight) {
         this.weight = weight;
         this.reps = reps;
     }
+
+    public Set() {
+    }
+
 
     public int getReps() {
         return reps;

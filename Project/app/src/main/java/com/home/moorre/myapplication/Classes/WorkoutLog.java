@@ -8,17 +8,17 @@ import java.util.ArrayList;
 /**
  * Created by Moorre on 3/21/2015.
  */
-public class Log {
+public class WorkoutLog {
     private int _id;
-    private Date _workoutDate;
-    private Timestamp _creationDate;
+    private long _workoutDate;
+    private long _creationDate;
     private Workout _loggedWorkout;
     private AerobicInput _aerobic;
     private AnaerobicInput _anaerobic;
     private boolean _isAerobic;
     private String _notes;
 
-    public void Log() {
+    public void WorkoutLog() {
 
     }
 
@@ -30,11 +30,11 @@ public class Log {
         this._id = _id;
     }
 
-    public Timestamp getCreationDate() {
+    public long getCreationDate() {
         return _creationDate;
     }
 
-    public void setCreationDate(Timestamp _creationDate) {
+    public void setCreationDate(long _creationDate) {
         this._creationDate = _creationDate;
     }
 
@@ -78,11 +78,11 @@ public class Log {
         this._notes = _notes;
     }
 
-    public Date getWorkoutDate() {
+    public long getWorkoutDate() {
         return _workoutDate;
     }
 
-    public void setWorkoutDate(Date _workoutDate) {
+    public void setWorkoutDate(long _workoutDate) {
         this._workoutDate = _workoutDate;
     }
 }

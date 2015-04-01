@@ -31,6 +31,10 @@ public class Workout {
         this._description = inDescription;
     }
 
+    public Workout(String inName) {
+        this._name = inName;
+    }
+
     public int getId() {
         return _id;
     }

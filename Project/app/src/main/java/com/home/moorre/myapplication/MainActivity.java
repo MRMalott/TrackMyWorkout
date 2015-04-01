@@ -14,7 +14,6 @@ import com.home.moorre.myapplication.Workouts.ViewWorkouts;
 
 
 public class MainActivity extends ActionBarActivity {
-    Button addWorkoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +22,7 @@ public class MainActivity extends ActionBarActivity {
 
         // Add listener to buttons
         ((Button)findViewById(R.id.btAddWorkout)).setOnClickListener(new ButtonClickListener());
+        ((Button)findViewById(R.id.btViewWorkout)).setOnClickListener(new ButtonClickListener());
         ((Button)findViewById(R.id.btViewLogs)).setOnClickListener(new ButtonClickListener());
     }
 
