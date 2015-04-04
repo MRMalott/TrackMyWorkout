@@ -6,7 +6,11 @@ android {
 
     defaultConfig {
         applicationId "com.home.moorre.myapplication"
+<<<<<<< HEAD
         minSdkVersion 14
+=======
+        minSdkVersion 11
+>>>>>>> dev
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"

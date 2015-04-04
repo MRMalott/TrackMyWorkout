@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+<<<<<<< HEAD
 import android.widget.Toast;
 
 import com.home.moorre.myapplication.Classes.AnaerobicInput;
@@ -24,13 +25,23 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+=======
+
+import com.home.moorre.myapplication.DB.MyDBHandler;
+import com.home.moorre.myapplication.R;
+
+>>>>>>> dev
 
 public class AddLogPage extends ActionBarActivity {
     DatePicker addLogDate;
     Button addLogBt;
     Spinner workoutTypeDrop;
     String workoutTypeDropValue;
+<<<<<<< HEAD
     EditText notesEt;
+=======
+
+>>>>>>> dev
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +49,17 @@ public class AddLogPage extends ActionBarActivity {
         setContentView(R.layout.activity_add_log_page);
 
         addLogDate = (DatePicker)findViewById(R.id.addLogDate);
+<<<<<<< HEAD
 
         addLogBt = (Button)findViewById(R.id.addLogBt);
         addLogBt.setOnClickListener(new addListener());
 
         workoutTypeDrop = (Spinner)findViewById(R.id.logWorkoutType);
+=======
+        addLogBt = (Button)findViewById(R.id.addLogBt);
+
+        workoutTypeDrop = (Spinner)findViewById(R.id.ddWorkoutType);
+>>>>>>> dev
         ArrayAdapter<String> workoutDropAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, MyDBHandler.WORKOUT_TYPE_IDS.keySet().toArray(new String[MyDBHandler.WORKOUT_TYPE_IDS.size()]));
         workoutDropAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         workoutTypeDrop.setAdapter(workoutDropAdapter);
@@ -62,8 +79,11 @@ public class AddLogPage extends ActionBarActivity {
             }
         });
 
+<<<<<<< HEAD
         notesEt = (EditText)findViewById(R.id.notesEV);
 
+=======
+>>>>>>> dev
     }
 
 
@@ -88,6 +108,7 @@ public class AddLogPage extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+<<<<<<< HEAD
 
     public class addListener implements View.OnClickListener {
         @Override
@@ -164,4 +185,6 @@ public class AddLogPage extends ActionBarActivity {
             db.close();
         }
     }
+=======
+>>>>>>> dev
 }

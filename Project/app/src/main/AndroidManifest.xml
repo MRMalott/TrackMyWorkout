@@ -19,22 +19,68 @@
         <activity
             android:name=".Workouts.AddWorkoutPage"
             android:label="@string/title_activity_add_workout_page" >
+<<<<<<< HEAD
+=======
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.home.moorre.myapplication.MainActivity" />
+>>>>>>> dev
         </activity>
         <activity
             android:name=".Workouts.ViewWorkouts"
             android:label="@string/title_activity_view_workouts" >
+<<<<<<< HEAD
+=======
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.home.moorre.myapplication.MainActivity" />
+>>>>>>> dev
         </activity>
         <activity
             android:name=".Logs.MainLogPage"
             android:label="@string/title_activity_main_log_page" >
+<<<<<<< HEAD
+=======
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.home.moorre.myapplication.MainActivity" />
+>>>>>>> dev
         </activity>
         <activity
             android:name=".Logs.AddLogPage"
             android:label="@string/title_activity_add_log_page" >
+<<<<<<< HEAD
         </activity>
         <activity
             android:name=".Logs.ViewLogPage"
             android:label="@string/title_activity_view_log_page" >
+=======
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.home.moorre.myapplication.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ViewLogPage"
+            android:label="@string/title_activity_view_log_page" >
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.home.moorre.myapplication.MainActivity" />
+>>>>>>> dev
         </activity>
     </application>
 

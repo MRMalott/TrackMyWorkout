@@ -258,8 +258,11 @@ public class AddWorkoutPage extends ActionBarActivity {
             e.printStackTrace();
             Toast err = Toast.makeText(this, "Couldn't add workout", Toast.LENGTH_SHORT);
             err.show();
+<<<<<<< HEAD
         } finally {
             dbHandler.close();
+=======
+>>>>>>> dev
         }
     }
 

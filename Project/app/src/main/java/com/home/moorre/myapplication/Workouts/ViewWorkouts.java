@@ -83,7 +83,10 @@ public class ViewWorkouts extends ActionBarActivity {
             } else {
                 errorTv.setText("No Match Found");
             }
+<<<<<<< HEAD
             dbHandler.close();
+=======
+>>>>>>> dev
         }
     }
 
@@ -201,7 +204,10 @@ public class ViewWorkouts extends ActionBarActivity {
             subRegionsTv.setText(subRegionsText);
             mainHolderView.addView(subRegionsTv);
         }
+<<<<<<< HEAD
 
         dbHandler.close();
+=======
+>>>>>>> dev
     }
 }

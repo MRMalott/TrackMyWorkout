@@ -8,7 +8,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+<<<<<<< HEAD
 import android.widget.ListView;
+=======
+>>>>>>> dev
 
 import com.home.moorre.myapplication.R;
 import com.home.moorre.myapplication.Workouts.AddWorkoutPage;
@@ -17,8 +20,12 @@ import com.home.moorre.myapplication.Workouts.ViewWorkouts;
 
 public class MainLogPage extends ActionBarActivity {
     Button viewLogsBt;
+<<<<<<< HEAD
     Button addLogsBt;
     ListView lastLogLayout;
+=======
+    LinearLayout lastLogLayout;
+>>>>>>> dev
 
 
     @Override
@@ -27,10 +34,14 @@ public class MainLogPage extends ActionBarActivity {
         setContentView(R.layout.activity_main_log_page);
 
         viewLogsBt = (Button)findViewById(R.id.viewLogsBt);
+<<<<<<< HEAD
         viewLogsBt.setOnClickListener(new ButtonClickListener());
         addLogsBt = (Button)findViewById(R.id.goToAddLogPageBt);
         addLogsBt.setOnClickListener(new ButtonClickListener());
         lastLogLayout = (ListView) findViewById(R.id.lastLog);
+=======
+        lastLogLayout = (LinearLayout)findViewById(R.id.lastLog);
+>>>>>>> dev
     }
 
 
@@ -62,6 +73,7 @@ public class MainLogPage extends ActionBarActivity {
             Button b = (Button) (v);
             int buttonId = b.getId();
 
+<<<<<<< HEAD
             System.out.println(buttonId + " : " + R.id.viewLogsBt);
 
             switch (buttonId) {
@@ -71,6 +83,11 @@ public class MainLogPage extends ActionBarActivity {
                     break;
                 case (R.id.goToAddLogPageBt):
                     intent = new Intent(MainLogPage.this, AddLogPage.class);
+=======
+            switch (buttonId) {
+                case (R.id.btViewLogs):
+                    Intent intent = new Intent(MainLogPage.this, MainLogPage.class);
+>>>>>>> dev
                     startActivity(intent);
                     break;
             }

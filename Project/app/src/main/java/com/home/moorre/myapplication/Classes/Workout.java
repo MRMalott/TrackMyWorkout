@@ -31,10 +31,13 @@ public class Workout {
         this._description = inDescription;
     }
 
+<<<<<<< HEAD
     public Workout(String inName) {
         this._name = inName;
     }
 
+=======
+>>>>>>> dev
     public int getId() {
         return _id;
     }

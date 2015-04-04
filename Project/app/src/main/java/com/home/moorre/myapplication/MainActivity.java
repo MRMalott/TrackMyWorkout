@@ -6,26 +6,45 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+<<<<<<< HEAD
 import android.widget.Button;
 
+=======
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+
+import com.home.moorre.myapplication.Classes.Workout;
+import com.home.moorre.myapplication.DB.MyDBHandler;
+import com.home.moorre.myapplication.DB.PopulateWorkouts;
+>>>>>>> dev
 import com.home.moorre.myapplication.Logs.MainLogPage;
 import com.home.moorre.myapplication.Workouts.AddWorkoutPage;
 import com.home.moorre.myapplication.Workouts.ViewWorkouts;
 
 
 public class MainActivity extends ActionBarActivity {
+    Button addWorkoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+<<<<<<< HEAD
 
         // Add listener to buttons
         ((Button)findViewById(R.id.btAddWorkout)).setOnClickListener(new ButtonClickListener());
         ((Button)findViewById(R.id.btViewWorkout)).setOnClickListener(new ButtonClickListener());
         ((Button)findViewById(R.id.btViewLogs)).setOnClickListener(new ButtonClickListener());
     }
+=======
+>>>>>>> dev
 
+        // Add listener to buttons
+        ((Button) findViewById(R.id.btAddWorkout)).setOnClickListener(new ButtonClickListener());
+        ((Button) findViewById(R.id.btViewLogs)).setOnClickListener(new ButtonClickListener());
+        ((Button) findViewById(R.id.btViewWorkout)).setOnClickListener(new ButtonClickListener());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

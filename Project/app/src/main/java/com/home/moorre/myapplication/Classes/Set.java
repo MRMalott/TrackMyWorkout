@@ -7,15 +7,22 @@ package com.home.moorre.myapplication.Classes;
 public class Set {
     private int weight, reps; //lbs
 
+<<<<<<< HEAD
     public Set(int reps, int weight) {
+=======
+    public void Set(int reps, int weight) {
+>>>>>>> dev
         this.weight = weight;
         this.reps = reps;
     }
 
+<<<<<<< HEAD
     public Set() {
     }
 
 
+=======
+>>>>>>> dev
     public int getReps() {
         return reps;
     }
