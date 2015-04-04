@@ -23,12 +23,10 @@ public class PopulateWorkouts {
      * @return whether it uploaded all the workouts
      */
     public boolean generateWorkouts() {
-<<<<<<< HEAD
         if (!addPushup()) {
             return false;
         }
 
-=======
         if (!addPushup() || !addSitup() || !addBicepCurl() || !addBenchPress() || !addWristCurl()
                 || !addFlutterKick() || !addBarbellRow() || !addBenchDip() || !addRearDeltRow()
                 || !addTreadmillJog() || !addChildsPose()) {
@@ -47,7 +45,6 @@ public class PopulateWorkouts {
         addTreadmillJog();
         addChildsPose();
 
->>>>>>> dev
         return true;
     }
 
@@ -55,21 +52,15 @@ public class PopulateWorkouts {
         Workout workout = new Workout();
         workout.setId(0);
         workout.setName("push up");
-<<<<<<< HEAD
         workout.setDescription("Get down push up");
-=======
         workout.setDescription("Get down on stomach and push up. Next lower down.");
->>>>>>> dev
         workout.setPictures(new ArrayList<Bitmap>());
         workout.setCheckMainRegions(true);
         workout.setCheckSubRegions(true);
         workout.setCheckPictures(false);
         workout.setMuscleGroupId(2);
-<<<<<<< HEAD
         workout.setWorkoutTypeId(0);
-=======
         workout.setWorkoutTypeId(1);
->>>>>>> dev
         ArrayList<String> mainregions = new ArrayList<String>(2);
         mainregions.add("triceps");
         mainregions.add("pectorals");
@@ -80,8 +71,6 @@ public class PopulateWorkouts {
         workout.setSubRegions(subregions);
 
         try {
-<<<<<<< HEAD
-=======
             System.out.println("---------------> " + workout);
             db.addWorkout(workout);
         } catch (Exception e) {
@@ -225,7 +214,6 @@ public class PopulateWorkouts {
 
         try {
             System.out.println("---------------> " + workout);
->>>>>>> dev
             db.addWorkout(workout);
         } catch (Exception e) {
             return false;
@@ -234,8 +222,6 @@ public class PopulateWorkouts {
         return true;
     }
 
-<<<<<<< HEAD
-=======
     private boolean addBarbellRow() {
         Workout workout = new Workout();
         workout.setId(6);
@@ -382,5 +368,4 @@ public class PopulateWorkouts {
 
         return true;
     }
->>>>>>> dev
 }
