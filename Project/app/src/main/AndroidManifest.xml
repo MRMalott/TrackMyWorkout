@@ -16,6 +16,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
         <activity
             android:name=".Workouts.AddWorkoutPage"
             android:label="@string/title_activity_add_workout_page" >
@@ -82,6 +83,8 @@
                 android:value="com.home.moorre.myapplication.MainActivity" />
 >>>>>>> dev
         </activity>
+=======
+>>>>>>> parent of 5fc7945... added a few things
     </application>
 
 </manifest>

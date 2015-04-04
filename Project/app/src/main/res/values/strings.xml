@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TrackMyWorkout</string>
+    <string name="app_name">My Application</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+<<<<<<< HEAD
 <<<<<<< HEAD
     <string name="title_activity_add_workout_page">AddWorkoutPage</string>
     <string name="title_activity_view_workouts">ViewWorkouts</string>
@@ -17,5 +18,7 @@
     <string name="title_activity_add_log_page">Add Log</string>
     <string name="title_activity_view_log_page">View Log</string>
 >>>>>>> dev
+=======
+>>>>>>> parent of 5fc7945... added a few things
 
 </resources>

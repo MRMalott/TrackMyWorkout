@@ -1,10 +1,10 @@
 package com.home.moorre.myapplication;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+<<<<<<< HEAD
 import android.view.View;
 <<<<<<< HEAD
 import android.widget.Button;
@@ -21,15 +21,17 @@ import com.home.moorre.myapplication.DB.PopulateWorkouts;
 import com.home.moorre.myapplication.Logs.MainLogPage;
 import com.home.moorre.myapplication.Workouts.AddWorkoutPage;
 import com.home.moorre.myapplication.Workouts.ViewWorkouts;
+=======
+>>>>>>> parent of 5fc7945... added a few things
 
 
 public class MainActivity extends ActionBarActivity {
-    Button addWorkoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         // Add listener to buttons
@@ -44,7 +46,10 @@ public class MainActivity extends ActionBarActivity {
         ((Button) findViewById(R.id.btAddWorkout)).setOnClickListener(new ButtonClickListener());
         ((Button) findViewById(R.id.btViewLogs)).setOnClickListener(new ButtonClickListener());
         ((Button) findViewById(R.id.btViewWorkout)).setOnClickListener(new ButtonClickListener());
+=======
+>>>>>>> parent of 5fc7945... added a few things
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -66,28 +71,5 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    // Listener for buttons
-    private class ButtonClickListener implements View.OnClickListener {
-        public void onClick(View v) {
-            Button b = (Button) (v);
-            int buttonId = b.getId();
-
-            switch (buttonId) {
-                case (R.id.btAddWorkout):
-                    Intent intent = new Intent(MainActivity.this, AddWorkoutPage.class);
-                    startActivity(intent);
-                    break;
-                case (R.id.btViewWorkout):
-                    intent = new Intent(MainActivity.this, ViewWorkouts.class);
-                    startActivity(intent);
-                    break;
-                case (R.id.btViewLogs):
-                    intent = new Intent(MainActivity.this, MainLogPage.class);
-                    startActivity(intent);
-                    break;
-            }
-        }
     }
 }
