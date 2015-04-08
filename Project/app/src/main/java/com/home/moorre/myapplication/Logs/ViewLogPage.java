@@ -33,8 +33,7 @@ public class ViewLogPage extends ActionBarActivity {
     ListView foundLogsLv;
     Button findLogBt;
     List<WorkoutLog> foundLogs;
-    ArrayAdapter<WorkoutLog> foundLogsAdapter;
-    LinearLayout tempSpace;
+    foundLogsAdapter foundLogsAdapter1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +41,7 @@ public class ViewLogPage extends ActionBarActivity {
         setContentView(R.layout.activity_view_log_page);
 
         foundLogs = new ArrayList<WorkoutLog>();
-        foundLogsAdapter = new ArrayAdapter<WorkoutLog>(this,
-                R.layout.log_view,
-                foundLogs);
+        foundLogsAdapter1 = new foundLogsAdapter();
 
         findLogDayPicker = (DatePicker)findViewById(R.id.dateLogDay);
         findLogBt = (Button)findViewById(R.id.findLogsBt);
@@ -53,15 +50,15 @@ public class ViewLogPage extends ActionBarActivity {
             public void onClick(View v) {
                 try {
                     fillLogs();
+                    Toast.makeText(ViewLogPage.this, "Found logs", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
-                    Toast failToast = Toast.makeText(ViewLogPage.this, "Failed to lookup logs", Toast.LENGTH_SHORT);
-                    failToast.show();
+                    e.printStackTrace();
+                    Toast.makeText(ViewLogPage.this, "Failed to lookup logs", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         foundLogsLv = (ListView)findViewById(R.id.foundLogs);
-        foundLogsLv.setAdapter(new foundLogsAdapter());
-        tempSpace = (LinearLayout) findViewById(R.id.tempSpace);
+        foundLogsLv.setAdapter(foundLogsAdapter1);
     }
 
 
@@ -89,52 +86,21 @@ public class ViewLogPage extends ActionBarActivity {
 
 
 
+
+
     public void fillLogs() throws Exception {
         Long lookupDate = getDateFromDatePicker(findLogDayPicker);
         MyDBHandler db = new MyDBHandler(this, null, null, 1);
 
         try {
-            foundLogs = db.findFullLogsByDate(lookupDate);
-            System.out.println("found logs");
+            foundLogs.clear();
+            foundLogs.addAll(db.findFullLogsByDate(lookupDate));
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
         }
 
-        // Display found logs
-        for (WorkoutLog log : foundLogs) {
-            foundLogs.add(log);
-            // Set new view's fields
-            TextView tempWorkoutDate = new TextView(this);
-            tempWorkoutDate.setText(new Date(log.getWorkoutDate()).toString());
-            tempSpace.addView(tempWorkoutDate);
-            TextView tempWorkoutName = new TextView(this);
-            tempWorkoutName.setText(log.getLoggedWorkout().getName());
-            tempSpace.addView(tempWorkoutName);
-            TextView tempWorkoutNotes = new TextView(this);
-            tempWorkoutNotes.setText(log.getNotes());
-            tempSpace.addView(tempWorkoutNotes);
-
-            // Set inputs
-            //LayoutInflater inflater = (LayoutInflater) ViewLogPage.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            //convertView = inflater.inflate(R.layout.log_view, parent, false);
-            LinearLayout inputArea = new LinearLayout(this); // Inputs Area
-            TextView simpleInputs = new TextView(this);
-            if(log.isAerobic()) {
-                simpleInputs.setText(log.getAerobic().getFeet() + " " + log.getAerobic().getSeconds());
-            } else {
-                StringBuilder inputText = new StringBuilder();
-                for(Set set : log.getAnaerobic().getSets()) {
-                    inputText.append(set.getReps() + " " + set.getWeight() + "\n");
-                }
-                simpleInputs.setText(inputText.toString());
-            }
-            inputArea.addView(simpleInputs);
-            tempSpace.addView(inputArea);
-        }
-        System.out.println("ready to notify");
-        //foundLogsLv.getAdapter().deferNotifyDataSetChanged();
-        System.out.println("notified");
+        foundLogsAdapter1.notifyDataSetChanged();
 
         db.close();
     }
@@ -199,6 +165,7 @@ public class ViewLogPage extends ActionBarActivity {
                 simpleInputs.setText(inputText.toString());
             }
             inputArea.addView(simpleInputs);
+            System.out.println("adding a log to view " + log.getNotes());
 
             return convertView;
         }

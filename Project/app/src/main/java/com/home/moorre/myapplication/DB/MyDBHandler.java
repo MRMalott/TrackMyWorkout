@@ -29,7 +29,7 @@ package com.home.moorre.myapplication.DB;
  * Created by Moorre on 2/5/2015.
  */
 public class MyDBHandler extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 52;
+    private static final int DATABASE_VERSION = 53;
     private static  final String DATABASE_NAME = "healthDB.db";
 
     private static  final String TABLE_WORKOUTS = "workouts";
@@ -268,6 +268,8 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
         db.insert(TABLE_WORKOUTS, null, workoutVals);
 
+        workout.setId(1);
+
         int picCount = 0;
         int whetherMain = 1; // The first is the main
         for (Bitmap pic : workout.getPictures()) {
@@ -333,29 +335,49 @@ public class MyDBHandler extends SQLiteOpenHelper {
         try {
             findWorkoutIdByName(workout.getName());
         } catch(NullPointerException ne) {
-            throw new Exception("exists");
+            // cleared to go
         }
 
         //  insert into primary table
-         addWorkoutTableInfo(workout);
+        try {
+            addWorkoutTableInfo(workout);
+        } catch (Exception e) {
+            System.err.println("Couldn't add workout table data");
+            throw e;
+        }
 
         // find auto assigned id of workout
-        workout.setId(findWorkoutIdByName(workout.getName()));
+        try {
+            workout.setId(findWorkoutIdByName(workout.getName()));
+        } catch(Exception e) {
+            System.err.println("Couldn't find auto assigned workout id");
+            throw e;
+        }
 
         // insert pictures
         if (workout.getCheckPictures()) {
-            addWorkoutPictureInfo(workout);
+            try {
+                addWorkoutPictureInfo(workout);
+            } catch(Exception e ) {
+                System.err.println("Couldn't add workout picture data");
+                throw e;
+            }
         }
 
         // insert into workout regions table
-        addWorkoutRegionsInfo(workout);
+        try {
+            addWorkoutRegionsInfo(workout);
+        }catch (Exception e) {
+            System.err.println("Couldn't add workout regions data");
+            throw e;
+        }
     }
 
-    private void addWorkoutTableInfo(Workout workout){
+    private void addWorkoutTableInfo(Workout workout) throws Exception {
         SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
 
         ContentValues workoutVals = new ContentValues();
-        workoutVals.put(COL_NAME, workout.getName().toLowerCase());
+        workoutVals.put(COL_NAME, workout.getName());
         workoutVals.put(COL_DESC, workout.getDescription());
         workoutVals.put(COL_WORKOUT_TYPE_ID, workout.getWorkoutTypeId());
         workoutVals.put(COL_MUSCLE_GROUP_ID, workout.getMuscleGroupId());
@@ -368,7 +390,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    private void addWorkoutPictureInfo(Workout workout) {
+    private void addWorkoutPictureInfo(Workout workout) throws Exception {
         SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
 
         int picCount = 0;
@@ -392,7 +414,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    private void addWorkoutRegionsInfo(Workout workout) {
+    private void addWorkoutRegionsInfo(Workout workout) throws Exception {
         SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
 
         if (workout.getCheckMainRegions()) {
@@ -496,6 +518,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         int id = 0; // will never return 0
         SQLiteDatabase db = this.getReadableDatabase(); // open db for writting
         String findIdQuery = "Select " + COL_ID + " from " + TABLE_WORKOUTS + " where " + COL_NAME + " = \"" + workoutName + "\"";
+
         Cursor cursor = db.rawQuery(findIdQuery, null);
         if (cursor.moveToFirst()) {
             cursor.moveToFirst();
@@ -637,8 +660,6 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(query, null);
 
-        System.out.println("findPicturesByWorkoutId\n" + id + " " + cursor.getCount());
-
         if (cursor.moveToFirst()) {
             cursor.moveToFirst();
 
@@ -651,7 +672,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
                 Bitmap bm = BitmapFactory.decodeStream(imageStream);
 
                 if (bm == null) {
-                    System.out.println("Couldn't add picture");
+                    System.err.println("Couldn't add picture");
                 } else {
                     // Add to front if main image
                     if (cursor.getString(2).equals("1")) {
@@ -668,7 +689,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         }
 
         db.close();
-        System.out.println("Found " + pictures.size() + " pictures");
+
         return pictures;
     }
 
@@ -721,7 +742,6 @@ public class MyDBHandler extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_LOGS, new String[]{COL_ID}, null, null, null, null, null);
         cursor.moveToLast();
         int id = cursor.getInt(0);
-        System.out.println("Found last id to be " + id);
 
         cursor.close();
         db.close();
@@ -810,7 +830,9 @@ public class MyDBHandler extends SQLiteOpenHelper {
             }while(cursor.moveToNext());
         }
         lookupInput.setSets(sets);
+
         cursor.close();
+        db.close();
 
         return lookupInput;
     }

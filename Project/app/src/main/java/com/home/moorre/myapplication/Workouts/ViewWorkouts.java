@@ -1,31 +1,45 @@
 package com.home.moorre.myapplication.Workouts;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.home.moorre.myapplication.Classes.Set;
 import com.home.moorre.myapplication.Classes.Workout;
+import com.home.moorre.myapplication.Classes.WorkoutLog;
 import com.home.moorre.myapplication.DB.MyDBHandler;
 import com.home.moorre.myapplication.R;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.Inflater;
 
 
 public class ViewWorkouts extends ActionBarActivity {
     EditText lookupTv;
     TextView errorTv;
-    LinearLayout mainHolderView;
     Button lookupBt;
-    ArrayList<LinearLayout> visibleWorkouts;
+    LinearLayout tempSpace;
+    List<Workout> foundWorkouts;
+    ListView foundWorkoutsLv;
+    FoundWorkoutsAdapter foundWorkoutsAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +48,14 @@ public class ViewWorkouts extends ActionBarActivity {
 
         lookupTv = (EditText) findViewById(R.id.lookupTv);
         errorTv = (TextView) findViewById(R.id.errorTv);
-        mainHolderView = (LinearLayout) findViewById(R.id.mainHolder);
         lookupBt = (Button) findViewById(R.id.lookupBt);
+        tempSpace = (LinearLayout) findViewById(R.id.tempSpace1);
         lookupBt.setOnClickListener(new LookupListener());
-        visibleWorkouts = new ArrayList<LinearLayout>();
+
+        foundWorkouts = new ArrayList<Workout>();
+        foundWorkoutsAdapter = new FoundWorkoutsAdapter();
+        foundWorkoutsLv = (ListView) findViewById(R.id.foundWorkoutsLv);
+        foundWorkoutsLv.setAdapter(foundWorkoutsAdapter);
     }
 
 
@@ -66,142 +84,158 @@ public class ViewWorkouts extends ActionBarActivity {
     private class LookupListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            MyDBHandler dbHandler = getDb();
-
             Button lookupBt = (Button)view;
 
-            if (lookupTv.getText().length() == 0) {
-              return;
+            try {
+                fillWorkouts();
+                Toast.makeText(ViewWorkouts.this, "Found workouts", Toast.LENGTH_SHORT).show();
+            } catch(Exception e) {
+                e.printStackTrace();
+                Toast.makeText(ViewWorkouts.this, "Failed to lookup workouts", Toast.LENGTH_SHORT).show();
             }
-
-            Workout workout =
-                    dbHandler.findFullWorkoutByName(lookupTv.getText().toString());
-
-            if (workout != null) {
-                addWorkoutDisplay(workout);
-                errorTv.setText(null);
-            } else {
-                errorTv.setText("No Match Found");
-            }
-            dbHandler.close();
         }
     }
 
+    public void fillWorkouts() throws Exception {
+        MyDBHandler db = getDb();
+
+        // Ignore if there is no input
+        if (lookupTv.getText().length() == 0) {
+            return;
+        }
+
+        try {
+            Workout foundWorkout = db.findFullWorkoutByName(cleanName(lookupTv.getText().toString()));
+
+            // Ignore if there are no workouts found
+            if (foundWorkout == null) {
+                return;
+            }
+
+            List<Workout> queryResults = new ArrayList<Workout>();
+            queryResults.add(foundWorkout);
+
+            foundWorkouts.clear();
+            foundWorkouts.addAll(queryResults);
+        } catch(Exception e) {
+            throw e;
+        }
+
+        foundWorkoutsAdapter.notifyDataSetChanged();
+
+        db.close();
+    }
+
+    class FoundWorkoutsAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return foundWorkouts.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return foundWorkouts.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Workout workout = foundWorkouts.get(position);
+            MyDBHandler dbHandler = getDb();
+
+            // If null then create new view
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) ViewWorkouts.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.workout_view, parent, false);
+            }
+
+            // Set new view's fields
+            // name
+            TextView nameTv = (TextView)convertView.findViewById(R.id.displayWorkoutNameTv);
+            nameTv.setText(workout.getName());
+
+            // description
+            TextView descTv = (TextView)convertView.findViewById(R.id.displayWorkoutDescTv);
+            descTv.setText(workout.getDescription());
+
+            // workout type
+            TextView workoutTypeTv = (TextView)convertView.findViewById(R.id.displayWorkoutDescTv);
+            workoutTypeTv.setText(dbHandler.findWorkoutTypeNameById(workout.getWorkoutTypeId()));
+
+            // muscle group
+            TextView muscleGroupTv = (TextView)convertView.findViewById(R.id.displayMuscleGroupTv);
+            muscleGroupTv.setText(dbHandler.findMuscleGroupNameById(workout.getMuscleGroupId()));
+
+            dbHandler.close();
+
+            // pictures
+            LinearLayout horLinearImageView = (LinearLayout) convertView.findViewById(R.id.displayPictureLl);
+
+            // now add images
+            if (workout.getCheckPictures()) {
+                for (Bitmap img : workout.getPictures()) {
+                    LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(100, 100);// width, height
+                    ImageView imgBox = new ImageView(convertView.getContext());
+                    imgBox.setLayoutParams(imgParams);
+                    imgBox.setImageBitmap(img);
+                    horLinearImageView.addView(imgBox);
+                }
+            } else {
+                horLinearImageView = new LinearLayout(convertView.getContext());
+                LinearLayout.LayoutParams horLinearImageViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                horLinearImageView.setLayoutParams(horLinearImageViewParams);
+                horLinearImageView.setOrientation(LinearLayout.HORIZONTAL);
+            }
+
+            // main regions
+            if (workout.getCheckMainRegions()) {
+                String mainRegionsText = "";
+                for (String region : workout.getMainRegions()) {
+                    mainRegionsText += region + " ";
+                    System.out.print("Found main region " + region);
+                }
+
+                TextView mainRegionsTv = (TextView)convertView.findViewById(R.id.displayMainRegionsTv);
+                mainRegionsTv.setText(mainRegionsText);
+            } else {
+                TextView mainRegionsTv = (TextView)convertView.findViewById(R.id.displayMainRegionsTv);
+                mainRegionsTv.setText("");
+            }
+
+            // sub regions
+            if (workout.getCheckSubRegions()) {
+                String subRegionsText = "";
+                for (String region : workout.getSubRegions()) {
+                    subRegionsText += region + " ";
+                    System.out.print("Found subregion " + region);
+                }
+
+                TextView subRegionsTv = (TextView)convertView.findViewById(R.id.displaySubRegionsTv);
+                subRegionsTv.setText(subRegionsText);
+            } else {
+                TextView subRegionsTv = (TextView)convertView.findViewById(R.id.displaySubRegionsTv);
+                subRegionsTv.setText("");
+            }
+
+            return convertView;
+        }
+    }
+
+
     /*
-        DB
+        Helpers
      */
+
+    public String cleanName(String name) {
+        return name.trim().toLowerCase();
+    }
 
     public MyDBHandler getDb() {
         return new MyDBHandler(this, null, null, 1);
-    }
-
-    /**
-     * Gets expandable layout given a workout
-     * @param workout
-     */
-    public void addWorkoutDisplay(Workout workout) {
-        MyDBHandler dbHandler = getDb(); // for name lookups
-
-        // id
-        TextView idTv = new TextView(this);
-        idTv.setText(String.valueOf(workout.getId()));
-        mainHolderView.addView(idTv);
-
-        // name
-        TextView nameTitleTv = new TextView(this);
-        nameTitleTv.setText("Name");
-        mainHolderView.addView(nameTitleTv);
-
-        TextView nameTv = new TextView(this);
-        nameTv.setText(workout.getName());
-        mainHolderView.addView(nameTv);
-
-        // description
-        TextView descTitleTv = new TextView(this);
-        descTitleTv.setText("Description");
-        mainHolderView.addView(descTitleTv);
-
-        TextView descTv = new TextView(this);
-        descTv.setText(workout.getDescription());
-        mainHolderView.addView(descTv);
-
-        // workout type
-        TextView workoutTypeTitleTv = new TextView(this);
-        workoutTypeTitleTv.setText("Workout Type");
-        mainHolderView.addView(workoutTypeTitleTv);
-
-        TextView workoutTypeTv = new TextView(this);
-        workoutTypeTv.setText(dbHandler.findWorkoutTypeNameById(workout.getWorkoutTypeId()));
-        mainHolderView.addView(workoutTypeTv);
-
-        // muscle group
-        TextView muscleGroupTitleTv = new TextView(this);
-        muscleGroupTitleTv.setText("Muscle Group");
-        mainHolderView.addView(muscleGroupTitleTv);
-
-        TextView muscleGroupTv = new TextView(this);
-        muscleGroupTv.setText(dbHandler.findMuscleGroupNameById(workout.getMuscleGroupId()));
-        mainHolderView.addView(muscleGroupTv);
-
-        // pictures
-        TextView picTv = new TextView(this);
-        picTv.setText("Pictures");
-        mainHolderView.addView(picTv);
-
-        HorizontalScrollView imageScrollView = new HorizontalScrollView(this);
-        HorizontalScrollView.LayoutParams imgFileParams = new HorizontalScrollView.LayoutParams(HorizontalScrollView.LayoutParams.MATCH_PARENT,
-                HorizontalScrollView.LayoutParams.WRAP_CONTENT);
-        imageScrollView.setLayoutParams(imgFileParams);
-
-        LinearLayout horLinearImageView = new LinearLayout(this);
-        LinearLayout.LayoutParams horLinearImageViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        horLinearImageView.setLayoutParams(horLinearImageViewParams);
-        horLinearImageView.setOrientation(LinearLayout.HORIZONTAL);
-
-        // now add images
-        if (workout.getCheckPictures()) {
-            for (Bitmap img : workout.getPictures()) {
-                LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(100, 100);// width, height
-                ImageView imgBox = new ImageView(this);
-                imgBox.setLayoutParams(imgParams);
-                imgBox.setImageBitmap(img);
-                horLinearImageView.addView(imgBox);
-            }
-        }
-        imageScrollView.addView(horLinearImageView);
-        mainHolderView.addView(imageScrollView);
-
-        // main regions
-        if (workout.getCheckMainRegions()) {
-            String mainRegionsText = "";
-            for (String region : workout.getMainRegions()) {
-                mainRegionsText += region + " ";
-            }
-            TextView mainRegionsTitleTv = new TextView(this);
-            mainRegionsTitleTv.setText("Main Regions");
-            mainHolderView.addView(mainRegionsTitleTv);
-
-            TextView mainRegionsTv = new TextView(this);
-            mainRegionsTv.setText(mainRegionsText);
-            mainHolderView.addView(mainRegionsTv);
-        }
-
-        // sub regions
-        if (workout.getCheckSubRegions()) {
-            String subRegionsText = "";
-            for (String region : workout.getSubRegions()) {
-                subRegionsText += region + " ";
-            }
-            TextView subRegionsTitleTv = new TextView(this);
-            subRegionsTitleTv.setText("Sub Regions");
-            mainHolderView.addView(subRegionsTitleTv);
-
-            TextView subRegionsTv = new TextView(this);
-            subRegionsTv.setText(subRegionsText);
-            mainHolderView.addView(subRegionsTv);
-        }
-
-        dbHandler.close();
     }
 }
