@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 public class ViewWorkouts extends ActionBarActivity {
     EditText lookupTv;
-    TextView errorTv;
     LinearLayout mainHolderView;
     Button lookupBt;
     ArrayList<LinearLayout> visibleWorkouts;
@@ -33,7 +32,6 @@ public class ViewWorkouts extends ActionBarActivity {
         setContentView(R.layout.activity_view_workouts);
 
         lookupTv = (EditText) findViewById(R.id.lookupTv);
-        errorTv = (TextView) findViewById(R.id.errorTv);
         mainHolderView = (LinearLayout) findViewById(R.id.mainHolder);
         lookupBt = (Button) findViewById(R.id.lookupBt);
         lookupBt.setOnClickListener(new LookupListener());
@@ -79,9 +77,10 @@ public class ViewWorkouts extends ActionBarActivity {
 
             if (workout != null) {
                 addWorkoutDisplay(workout);
-                errorTv.setText(null);
+                lookupTv.setHint("");
             } else {
-                errorTv.setText("No Match Found");
+                lookupTv.setText("");
+                lookupTv.setHint("No Match Found!");
             }
             dbHandler.close();
         }
