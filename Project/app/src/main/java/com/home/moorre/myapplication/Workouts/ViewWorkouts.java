@@ -1,6 +1,7 @@
 package com.home.moorre.myapplication.Workouts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +25,7 @@ import com.home.moorre.myapplication.Classes.Set;
 import com.home.moorre.myapplication.Classes.Workout;
 import com.home.moorre.myapplication.Classes.WorkoutLog;
 import com.home.moorre.myapplication.DB.MyDBHandler;
+import com.home.moorre.myapplication.Logs.AddLogPage;
 import com.home.moorre.myapplication.R;
 
 import java.sql.Date;
@@ -35,10 +38,10 @@ public class ViewWorkouts extends ActionBarActivity {
     EditText lookupTv;
     TextView errorTv;
     Button lookupBt;
-    LinearLayout tempSpace;
     List<Workout> foundWorkouts;
     ListView foundWorkoutsLv;
     FoundWorkoutsAdapter foundWorkoutsAdapter;
+    boolean fromLogPage;
 
 
     @Override
@@ -49,15 +52,33 @@ public class ViewWorkouts extends ActionBarActivity {
         lookupTv = (EditText) findViewById(R.id.lookupTv);
         errorTv = (TextView) findViewById(R.id.errorTv);
         lookupBt = (Button) findViewById(R.id.lookupBt);
-        tempSpace = (LinearLayout) findViewById(R.id.tempSpace1);
         lookupBt.setOnClickListener(new LookupListener());
 
-        foundWorkouts = new ArrayList<Workout>();
-        foundWorkoutsAdapter = new FoundWorkoutsAdapter();
+        Bundle params = getIntent().getExtras() == null ? new Bundle() : getIntent().getExtras(); // retrieve intent parameters
+        fromLogPage = params.getBoolean("logLookup", false); // set the variable
+        System.out.println("came from log area: " + fromLogPage);
+
         foundWorkoutsLv = (ListView) findViewById(R.id.foundWorkoutsLv);
+        foundWorkoutsAdapter = new FoundWorkoutsAdapter();
+        foundWorkouts = new ArrayList<Workout>();
         foundWorkoutsLv.setAdapter(foundWorkoutsAdapter);
+        foundWorkoutsLv.setOnItemClickListener(new itemClickListener());
     }
 
+    public class itemClickListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            System.out.println("clicked item, log flag is " + fromLogPage);
+            if (fromLogPage) {
+                Intent intent = new Intent(ViewWorkouts.this, AddLogPage.class);
+                intent.putExtra("logLookup", true);
+                intent.putExtra("selectedWorkout", foundWorkouts.get(position).getName());
+                startActivity(intent); // go back to logs
+            } else {
+                // do nothing
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,6 +101,8 @@ public class ViewWorkouts extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
     private class LookupListener implements View.OnClickListener {
         @Override
@@ -195,9 +218,9 @@ public class ViewWorkouts extends ActionBarActivity {
             // main regions
             if (workout.getCheckMainRegions()) {
                 String mainRegionsText = "";
+                int setNumber = 1;
                 for (String region : workout.getMainRegions()) {
                     mainRegionsText += region + " ";
-                    System.out.print("Found main region " + region);
                 }
 
                 TextView mainRegionsTv = (TextView)convertView.findViewById(R.id.displayMainRegionsTv);
@@ -212,7 +235,6 @@ public class ViewWorkouts extends ActionBarActivity {
                 String subRegionsText = "";
                 for (String region : workout.getSubRegions()) {
                     subRegionsText += region + " ";
-                    System.out.print("Found subregion " + region);
                 }
 
                 TextView subRegionsTv = (TextView)convertView.findViewById(R.id.displaySubRegionsTv);

@@ -130,6 +130,20 @@ public class MyDBHandler extends SQLiteOpenHelper {
         WORKOUT_TYPE_IDS = Collections.unmodifiableMap(mapping);
     }
 
+    /**
+     * Says whether a workout (string) will use sets and reps
+     * @param workoutType
+     * @return true if its a workout type that uses sets
+     */
+    public static boolean doesWorkoutUseSets(int workoutType) {
+        List<Integer> workouts  = new ArrayList<Integer>();
+        workouts.add(WORKOUT_TYPE_IDS.get("anaerobic"));
+        if (workouts.contains(workoutType)) {
+            return true;
+        }
+        return false;
+    }
+
 
     public MyDBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -313,7 +327,6 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int olderVersion, int newVersion) {
-        System.out.println("\nTrying to update\n");
         db.execSQL("drop table if exists " + TABLE_WORKOUTS);
         db.execSQL("drop table if exists " + TABLE_PICTURES);
         db.execSQL("drop table if exists " + TABLE_WORKOUT_REGIONS);
@@ -324,7 +337,6 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.execSQL("drop table if exists " + TABLE_AEROBIC_INPUTS);
         db.execSQL("drop table if exists " + TABLE_SETS);
         onCreate(db);
-        System.out.println("\nUpdated\n");
     }
 
     /*
@@ -466,7 +478,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         logInfo.put(COL_WORKOUT_ID, log.getLoggedWorkout().getId());
         logInfo.put(COL_WORKOUT_DATE, log.getWorkoutDate());
         logInfo.put(COL_CREATION_DATE, log.getCreationDate());
-        logInfo.put(COL_IS_AEROBIC, log.isAerobic() ? 1 : 0);
+        logInfo.put(COL_IS_AEROBIC, log.usesSets() ? 0 : 1);
         logInfo.put(COL_NOTES, log.getNotes());
 
         try {
@@ -485,14 +497,14 @@ public class MyDBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
 
         // Determine which type the 'set' is
-        if(log.isAerobic()) {
+        if(!log.usesSets()) {
             ContentValues aerobicInputs = new ContentValues();
             aerobicInputs.put(COL_LOG_ID, log.getId());
             aerobicInputs.put(COL_FEET, log.getAerobic().getFeet());
             aerobicInputs.put(COL_SECONDS, log.getAerobic().getSeconds());
             db.insert(TABLE_AEROBIC_INPUTS, null, aerobicInputs);
         } else {
-            ArrayList<Set> sets = log.getAnaerobic().getSets();
+            List<Set> sets = log.getAnaerobic().getSets();
             for(int pos = 0; pos < sets.size(); pos++) {
                 ContentValues setInput = new ContentValues();
                 setInput.put(COL_LOG_ID, log.getId());
@@ -766,7 +778,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
                 tempLog.setLoggedWorkout(new Workout(cursor.getString(1))); // fill workout later
                 tempLog.setWorkoutDate(cursor.getLong(3));
                 tempLog.setCreationDate(cursor.getLong(4));
-                tempLog.setIsAerobic(cursor.getInt(5) == 1 ? true : false);
+                tempLog.setUsesSets(cursor.getInt(5) == 1 ? false : true);
                 tempLog.setNotes(cursor.getString(6));
 
                 // WOW I went through SO much trouble to find out that I wasn't adding the temp log to the list
@@ -784,13 +796,12 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
         // Collect individual logs'
         for (WorkoutLog log : logs) {
-            if(log.isAerobic()) {
+            if(!log.usesSets()) {
                 log.setAerobic(findAerobicInputByLogId(log.getId()));
             } else {
                 log.setAnaerobic(findAnaerobicInputByLogId(log.getId()));
             }
         }
-
 
         return logs;
     }
@@ -826,7 +837,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         // Get the different sets
         if(cursor.moveToFirst()) {
             do {
-                sets.add(new Set(cursor.getInt(2), cursor.getInt(3))); /* correct order? */
+                sets.add(new Set(cursor.getInt(2), cursor.getDouble(3))); /* correct order? */
             }while(cursor.moveToNext());
         }
         lookupInput.setSets(sets);
@@ -835,6 +846,36 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
 
         return lookupInput;
+    }
+
+    public List<WorkoutLog> findRecentWorkouts() {
+        List<WorkoutLog> logs;
+
+        long recentDate = findMostRecentLogDate();
+        System.out.println("Most recent is " + (new Date(recentDate)).toString());
+        if (recentDate == -1l) {
+            logs = new ArrayList<WorkoutLog>();
+        } else {
+            logs = findFullLogsByDate(recentDate);
+        }
+
+        return logs;
+    }
+
+    public long findMostRecentLogDate() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        long date = -1;
+        String query = "Select " + COL_WORKOUT_DATE + " from " + TABLE_LOGS + " order by " + COL_WORKOUT_DATE + " desc limit 1";
+
+        Cursor resultsCursor = db.rawQuery(query, null);
+        if(resultsCursor.moveToFirst()) {
+            date = resultsCursor.getLong(0);
+        }
+
+        resultsCursor.close();
+        db.close();
+
+        return date;
     }
 
     /*
