@@ -3,16 +3,21 @@ package com.home.moorre.myapplication.Classes;
 import android.content.Intent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Moorre on 3/21/2015.
  */
 public class AnaerobicInput {
     /** Holds sets reps */
-    private ArrayList<Set> _sets;
+    private List<Set> _sets;
     private int _logId;
 
-    public void AnaerobicInput(ArrayList<Set> sets) {
+    public AnaerobicInput() {
+        this._sets = new ArrayList<Set>();
+    }
+
+    public AnaerobicInput(List<Set> sets) {
         this._sets = new ArrayList<Set>(sets);
     }
 
@@ -24,11 +29,11 @@ public class AnaerobicInput {
         this._logId = _logId;
     }
 
-    public void setSets(ArrayList<Set> sets) {
+    public void setSets(List<Set> sets) {
         this._sets = new ArrayList<Set>(sets);
     }
 
-    public ArrayList<Set> getSets() {
+    public List<Set> getSets() {
         return this._sets;
     }
 }

@@ -84,17 +84,12 @@ public class ViewLogPage extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
-
     public void fillLogs() throws Exception {
         Long lookupDate = getDateFromDatePicker(findLogDayPicker);
         MyDBHandler db = new MyDBHandler(this, null, null, 1);
 
         try {
-            foundLogs.clear();
-            foundLogs.addAll(db.findFullLogsByDate(lookupDate));
+            foundLogs = new ArrayList<WorkoutLog>(db.findFullLogsByDate(lookupDate));
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
@@ -154,16 +149,19 @@ public class ViewLogPage extends ActionBarActivity {
 
             // Set inputs
             LinearLayout inputArea = (LinearLayout)convertView.findViewById(R.id.inputsArea); // Inputs Area
+            inputArea.removeAllViewsInLayout();
             TextView simpleInputs = new TextView(convertView.getContext());
-            if(log.isAerobic()) {
-                simpleInputs.setText(log.getAerobic().getFeet() + " " + log.getAerobic().getSeconds());
+            if(!log.usesSets()) {
+                simpleInputs.setText("Distance: " + log.getAerobic().getFeet() + "feet Time: " + log.getAerobic().getSeconds() + "seconds");
             } else {
-                StringBuilder inputText = new StringBuilder();
+                StringBuilder inputText = new StringBuilder("");
+                int setNumber = 1;
                 for(Set set : log.getAnaerobic().getSets()) {
-                    inputText.append(set.getReps() + " " + set.getWeight() + "\n");
+                    inputText.append("Set " + (setNumber++) + " " + set.getReps() + " " + set.getWeight() + "\n");
                 }
                 simpleInputs.setText(inputText.toString());
             }
+
             inputArea.addView(simpleInputs);
             System.out.println("adding a log to view " + log.getNotes());
 

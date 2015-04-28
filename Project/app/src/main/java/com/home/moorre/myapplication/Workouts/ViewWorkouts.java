@@ -1,40 +1,46 @@
 package com.home.moorre.myapplication.Workouts;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.home.moorre.myapplication.Classes.Workout;
-import com.home.moorre.myapplication.DB.MyDBHandler;
-import com.home.moorre.myapplication.R;
-import java.util.ArrayList;
-import java.util.List;
+        import android.content.Context;
+        import android.content.Intent;
+        import android.graphics.Typeface;
+        import android.support.v7.app.ActionBarActivity;
+        import android.os.Bundle;
+        import android.view.Menu;
+        import android.view.MenuItem;
+        import android.view.MotionEvent;
+        import android.view.View;
+        import android.view.inputmethod.InputMethodManager;
+        import android.widget.AdapterView;
+        import android.widget.ArrayAdapter;
+        import android.widget.Button;
+        import android.widget.EditText;
+        import android.widget.ListView;
+        import android.widget.TextView;
+        import android.widget.Toast;
+        import com.home.moorre.myapplication.Classes.Workout;
+        import com.home.moorre.myapplication.DB.MyDBHandler;
+        import com.home.moorre.myapplication.Logs.AddLogPage;
+        import com.home.moorre.myapplication.R;
+        import java.util.ArrayList;
+        import java.util.List;
 
-import static android.graphics.Typeface.*;
+        import static android.graphics.Typeface.*;
 
 public class ViewWorkouts extends ActionBarActivity implements View.OnClickListener{
     EditText lookupTv;
     Button lookupBt;
     List<Workout> workouts;
     View lastSelectedView = null;
+    boolean fromLogPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_workouts);
+
+        // set log page parameters
+        Bundle params = getIntent().getExtras() == null ? new Bundle() : getIntent().getExtras();
+        fromLogPage = params.getBoolean("logLookup", false);
 
         //Custom font
         String fontPath = "fonts/SFEspressoShack.otf";
@@ -84,19 +90,28 @@ public class ViewWorkouts extends ActionBarActivity implements View.OnClickListe
 
         allWorkoutsLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Highlight last clicked view
-                if (lastSelectedView != null) {
-                    lastSelectedView.setBackgroundResource(R.color.white);
-                }
-                lastSelectedView = view;
-                view.setBackgroundResource(R.drawable.roundbgwhite);
 
-                //Open workout details
-                Workout workout = workouts.get(position);
-                Intent intent = new Intent();
-                intent.putExtra("key1", workout.getName());
-                intent.setClass(ViewWorkouts.this, ViewSingleWorkout.class);
-                startActivity(intent);
+                // Check whether here for log lookup
+                if (fromLogPage) {
+                    Intent intent = new Intent(ViewWorkouts.this, AddLogPage.class);
+                    intent.putExtra("logLookup", true);
+                    intent.putExtra("selectedWorkout", workouts.get(position).getName());
+                    startActivity(intent);
+                } else {
+                    //Highlight last clicked view
+                    if (lastSelectedView != null) {
+                        lastSelectedView.setBackgroundResource(R.color.white);
+                    }
+                    lastSelectedView = view;
+                    view.setBackgroundResource(R.drawable.roundbgwhite);
+
+                    //Open workout details
+                    Workout workout = workouts.get(position);
+                    Intent intent = new Intent();
+                    intent.putExtra("key1", workout.getName());
+                    intent.setClass(ViewWorkouts.this, ViewSingleWorkout.class);
+                    startActivity(intent);
+                }
             }
         });
     }

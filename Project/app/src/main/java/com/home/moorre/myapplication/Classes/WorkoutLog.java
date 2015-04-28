@@ -1,10 +1,5 @@
 package com.home.moorre.myapplication.Classes;
 
-import java.lang.reflect.Array;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-
 /**
  * Created by Moorre on 3/21/2015.
  */
@@ -15,7 +10,7 @@ public class WorkoutLog {
     private Workout _loggedWorkout;
     private AerobicInput _aerobic;
     private AnaerobicInput _anaerobic;
-    private boolean _isAerobic;
+    private boolean _usesSets;
     private String _notes;
 
     public void WorkoutLog() {
@@ -62,12 +57,12 @@ public class WorkoutLog {
         return this._anaerobic;
     }
 
-    public void setIsAerobic(boolean isAerobic) {
-        this._isAerobic = isAerobic;
+    public void setUsesSets(boolean isAerobic) {
+        this._usesSets = isAerobic;
     }
 
-    public boolean isAerobic() {
-        return _isAerobic;
+    public boolean usesSets() {
+        return _usesSets;
     }
 
     public String getNotes() {

@@ -54,7 +54,7 @@
         <ListView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/lastLog"
+            android:id="@+id/lastLogs"
             android:layout_gravity="top|center_horizontal">
 
         </ListView>

@@ -5,16 +5,17 @@ package com.home.moorre.myapplication.Classes;
  * Holds reps(lbs) and weight for the set
  */
 public class Set {
-    private int weight, reps; //lbs
+    private int reps; //lbs
+    private double weight;
 
-    public Set(int reps, int weight) {
+    public Set(int reps, double weight) {
         this.weight = weight;
         this.reps = reps;
     }
 
     public Set() {
-    }
 
+    }
 
     public int getReps() {
         return reps;
@@ -24,11 +25,11 @@ public class Set {
         this.reps = reps;
     }
 
-    public int getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 }

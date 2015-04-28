@@ -29,6 +29,7 @@
                 android:id="@+id/viewWorkoutsTV"
                 android:textColor="@color/green"
                 android:textSize="30sp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -76,6 +77,7 @@
             android:background="@drawable/roundedbgwhitenoborder">
 
         </ListView>
+
     </LinearLayout>
 
 </LinearLayout>
