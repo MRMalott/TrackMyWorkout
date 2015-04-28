@@ -5,28 +5,28 @@
     <item android:state_pressed="true" >
         <shape
             android:shape="rectangle">
-        <solid android:color="@color/gray" />
-        <stroke
-            android:width="3dp"
-            android:color="@color/white" />
-        <corners android:bottomRightRadius="8dip"
-            android:bottomLeftRadius="8dip"
-            android:topRightRadius="8dip"
-            android:topLeftRadius="8dip"/>
+            <solid android:color="@color/black" />
+            <stroke
+                android:width="3dp"
+                android:color="@color/green" />
+            <corners android:bottomRightRadius="8dip"
+                android:bottomLeftRadius="8dip"
+                android:topRightRadius="8dip"
+                android:topLeftRadius="8dip"/>
         </shape>
     </item>
 
     <item>
         <shape
             android:shape="rectangle">
-        <solid android:color="@color/gray" />
-        <stroke
-            android:width="3dp"
-            android:color="@color/green" />
-        <corners android:bottomRightRadius="8dip"
-            android:bottomLeftRadius="8dip"
-            android:topRightRadius="8dip"
-            android:topLeftRadius="8dip"/>
+            <solid android:color="@color/gray" />
+            <stroke
+                android:width="3dp"
+                android:color="@color/green" />
+            <corners android:bottomRightRadius="8dip"
+                android:bottomLeftRadius="8dip"
+                android:topRightRadius="8dip"
+                android:topLeftRadius="8dip"/>
         </shape>
     </item>
 </selector>

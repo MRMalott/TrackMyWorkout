@@ -14,12 +14,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
-        <ImageView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/log_img"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/logs" />
+            android:text="Log Page"
+            android:textSize="18sp"
+            android:layout_marginBottom="5dp" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -33,24 +33,14 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginLeft="5dp"
                 android:text="View Logs"
-                android:id="@+id/viewLogsBt"
-                android:background="@drawable/roundedbutton"
-                android:textColor="@color/green"
-                android:textSize="22sp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp" />
+                android:id="@+id/viewLogsBt" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Add Log"
                 android:id="@+id/goToAddLogPageBt"
-                android:longClickable="true"
-                android:background="@drawable/roundedbutton"
-                android:textColor="@color/green"
-                android:textSize="22sp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp" />
+                android:longClickable="true" />
 
         </LinearLayout>
 

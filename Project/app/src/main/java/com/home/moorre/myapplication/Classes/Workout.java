@@ -123,4 +123,10 @@ public class Workout {
     public void setCheckSubRegions(boolean _checkRegions) {
         this._checkSubRegions = _checkRegions;
     }
+
+    // Used by the ArrayAdapter in the ListView
+    @Override
+    public String toString() {
+        return _name;
+    }
 }

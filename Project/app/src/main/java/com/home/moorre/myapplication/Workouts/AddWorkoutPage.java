@@ -1,7 +1,9 @@
 package com.home.moorre.myapplication.Workouts;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
@@ -9,7 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -31,7 +35,6 @@ import java.util.ArrayList;
 
 
 public class AddWorkoutPage extends ActionBarActivity {
-    TextView idView;
     EditText workoutBox;
     EditText descriptionBox;
     // workout type
@@ -45,13 +48,20 @@ public class AddWorkoutPage extends ActionBarActivity {
     ImageView mainImageView;
     Button addImageBt;
     ArrayList<Bitmap> images;
+    static final boolean MAIN_REGIONS = true;
+    static final boolean SUB_REGIONS = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_workout_page);
 
-        idView = (TextView) findViewById(R.id.tvId);
+        //Custom font
+        String fontPath = "fonts/SFEspressoShack.otf";
+        TextView customTV = (TextView) findViewById(R.id.addWorkoutTV);
+        Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
+        customTV.setTypeface(tf);
+
         workoutBox = (EditText) findViewById(R.id.tvName);
         descriptionBox = (EditText) findViewById(R.id.tvDesc);
 
@@ -71,7 +81,7 @@ public class AddWorkoutPage extends ActionBarActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent)
             {
-                workoutTypeDropValue = "anaerobic";
+                workoutTypeDropValue = "strength";
             }
         });
 
@@ -117,7 +127,6 @@ public class AddWorkoutPage extends ActionBarActivity {
             checkboxIndex++;
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -200,14 +209,21 @@ public class AddWorkoutPage extends ActionBarActivity {
     /*
     DBHandlers
      */
-
     public void newWorkout (View view) {
         MyDBHandler dbHandler = new MyDBHandler(this, null, null, 1);
 
-        // Assure name not taken already
+        // Assure name not taken already and not blank
+        String name = cleanName(workoutBox.getText().toString());
+        if (name.isEmpty()) {
+            Toast.makeText(AddWorkoutPage.this, "Name cannot be blank", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         boolean nameExists = true;
         try {
+            dbHandler.findWorkoutIdByName(name);
         } catch(Exception e) {
+            // Will throw an error if the name doesn't exist
             nameExists = false;
         }
 
@@ -217,31 +233,33 @@ public class AddWorkoutPage extends ActionBarActivity {
             return;
         }
 
-        String desc = descriptionBox.getText().toString().trim();
-        String name = cleanName(workoutBox.getText().toString());
         int workoutTypeId = MyDBHandler.WORKOUT_TYPE_IDS.get(workoutTypeDropValue); //workout type
         int muscleGroupId = MyDBHandler.GROUPING_IDS.get(muscleGroupDropValue); // muscle group
-        // images
-        ArrayList<String> selectedMainRegions = getRegionCheckboxValues(true);
-        ArrayList<String> selectedSubRegions = getRegionCheckboxValues(false);
+        ArrayList<String> selectedMainRegions = getRegionCheckboxValues(MAIN_REGIONS);
+        ArrayList<String> selectedSubRegions = getRegionCheckboxValues(SUB_REGIONS);
 
         Workout workout = new Workout();
+
         workout.setName(name);
-        workout.setDescription(desc);
+        workout.setDescription(descriptionBox.getText().toString().trim());
+
         workout.setWorkoutTypeId(workoutTypeId);
         workout.setMuscleGroupId(muscleGroupId);
+
         workout.setPictures(images);
         if (images.isEmpty()) {
             workout.setCheckPictures(false);
         } else {
             workout.setCheckPictures(true);
         }
+
         workout.setMainRegions(selectedMainRegions);
         if (selectedMainRegions.isEmpty()) {
             workout.setCheckMainRegions(false);
         } else {
             workout.setCheckMainRegions(true);
         }
+
         workout.setSubRegions(selectedSubRegions);
         if (selectedSubRegions.isEmpty()) {
             workout.setCheckSubRegions(false);
@@ -252,12 +270,10 @@ public class AddWorkoutPage extends ActionBarActivity {
         // Try to add the workout
         try {
             dbHandler.addWorkout(workout);
-            Toast good = Toast.makeText(this, "Added workout", Toast.LENGTH_SHORT);
-            good.show();
+            Toast.makeText(this, "Added workout", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast err = Toast.makeText(this, "Couldn't add workout", Toast.LENGTH_SHORT);
-            err.show();
+            Toast.makeText(this, "Couldn't add workout", Toast.LENGTH_SHORT).show();
         } finally {
             dbHandler.close();
         }
@@ -265,12 +281,13 @@ public class AddWorkoutPage extends ActionBarActivity {
 
     /**
      * Get what checkboxes where selected
-     * @param main checks main boxes if true, sub boxes if not
+     * @param isMain checks main boxes if true, sub boxes if not
      * @return ArrayList<String> of selected regions or empty ArrayList
      */
-    private ArrayList<String> getRegionCheckboxValues(boolean main) {
+    private ArrayList<String> getRegionCheckboxValues(boolean isMain) {
         ArrayList<String> selectedRegions = new ArrayList<String>(14);
-        if (main) {
+
+        if (isMain) {
             int[] mainCheckboxes = {R.id.mainChk1, R.id.mainChk2, R.id.mainChk3, R.id.mainChk4, R.id.mainChk5, R.id.mainChk6, R.id.mainChk7,
                     R.id.mainChk8, R.id.mainChk9, R.id.mainChk10, R.id.mainChk11, R.id.mainChk12, R.id.mainChk13, R.id.mainChk14};
             for (int checkboxId = 0; checkboxId < mainCheckboxes.length; checkboxId++) {

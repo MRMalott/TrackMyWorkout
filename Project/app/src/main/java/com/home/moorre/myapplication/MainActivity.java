@@ -1,32 +1,61 @@
 package com.home.moorre.myapplication;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-
+import android.widget.Toast;
+import com.home.moorre.myapplication.Classes.Workout;
+import com.home.moorre.myapplication.DB.MyDBHandler;
+import com.home.moorre.myapplication.DB.PopulateWorkouts;
 import com.home.moorre.myapplication.Logs.MainLogPage;
 import com.home.moorre.myapplication.Workouts.AddWorkoutPage;
+import com.home.moorre.myapplication.Workouts.FilterWorkouts;
+import com.home.moorre.myapplication.Workouts.ViewSingleWorkout;
 import com.home.moorre.myapplication.Workouts.ViewWorkouts;
 
 
 public class MainActivity extends ActionBarActivity {
+    private Boolean exit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Add listener to buttons
-        ((Button)findViewById(R.id.btAddWorkout)).setOnClickListener(new ButtonClickListener());
-        ((Button)findViewById(R.id.btViewWorkout)).setOnClickListener(new ButtonClickListener());
-        ((Button)findViewById(R.id.btViewLogs)).setOnClickListener(new ButtonClickListener());
+        //If database empty, ask to load pre-made workouts
+        MyDBHandler db = new MyDBHandler(this, null, null, 1);
+        if(db.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Would you like to load default workouts?");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    PopulateWorkouts pop = new PopulateWorkouts(getApplicationContext());
+                    pop.generateWorkouts();
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+        //Add listener to buttons
+        findViewById(R.id.btAddWorkout).setOnClickListener(new ButtonClickListener());
+        findViewById(R.id.btViewWorkout).setOnClickListener(new ButtonClickListener());
+        findViewById(R.id.btViewLogs).setOnClickListener(new ButtonClickListener());
+        findViewById(R.id.btRandomWorkout).setOnClickListener(new ButtonClickListener());
     }
 
 
@@ -52,31 +81,10 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed(){
-        DialogInterface.OnClickListener dialogClickListener2 = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder ab2 = new AlertDialog.Builder(this);
-        ab2.setMessage("Exit TrackMyWorkout?").setPositiveButton("Exit", dialogClickListener2)
-                .setNegativeButton("Cancel", dialogClickListener2).show();
-    }
-
     // Listener for buttons
     private class ButtonClickListener implements View.OnClickListener {
         public void onClick(View v) {
+            MyDBHandler db = new MyDBHandler(getApplicationContext(), null, null, 1);
             Button b = (Button) (v);
             int buttonId = b.getId();
 
@@ -86,14 +94,51 @@ public class MainActivity extends ActionBarActivity {
                     startActivity(intent);
                     break;
                 case (R.id.btViewWorkout):
-                    intent = new Intent(MainActivity.this, ViewWorkouts.class);
-                    startActivity(intent);
+                    if(db.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "No workouts found", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        intent = new Intent(MainActivity.this, FilterWorkouts.class);
+                        startActivity(intent);
+                    }
                     break;
                 case (R.id.btViewLogs):
                     intent = new Intent(MainActivity.this, MainLogPage.class);
                     startActivity(intent);
                     break;
+                case (R.id.btRandomWorkout):
+                    try {
+                        Workout workout = db.randomWorkout();
+                        intent = new Intent(MainActivity.this, ViewSingleWorkout.class);
+                        intent.putExtra("key1", workout.getName());
+                        startActivity(intent);
+                    }
+                    catch(Exception e){
+                        Toast.makeText(MainActivity.this, "No workouts found", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (exit) {
+            //this.finish();
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, "Press again to close the app.", Toast.LENGTH_SHORT).show();
+            exit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    exit = false;
+                }
+            }, 3 * 1000);
         }
     }
 }

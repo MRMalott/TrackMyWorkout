@@ -1,43 +1,138 @@
 package com.home.moorre.myapplication.Workouts;
 
-import android.graphics.Bitmap;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.home.moorre.myapplication.Classes.Workout;
 import com.home.moorre.myapplication.DB.MyDBHandler;
 import com.home.moorre.myapplication.R;
-
 import java.util.ArrayList;
+import java.util.List;
 
+import static android.graphics.Typeface.*;
 
-public class ViewWorkouts extends ActionBarActivity {
+public class ViewWorkouts extends ActionBarActivity implements View.OnClickListener{
     EditText lookupTv;
-    LinearLayout mainHolderView;
     Button lookupBt;
-    ArrayList<LinearLayout> visibleWorkouts;
+    List<Workout> workouts;
+    View lastSelectedView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_workouts);
 
+        //Custom font
+        String fontPath = "fonts/SFEspressoShack.otf";
+        TextView customTV = (TextView) findViewById(R.id.viewWorkoutsTV);
+        Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
+        customTV.setTypeface(tf);
+
+        //Hide soft keyboard on touch
+        findViewById(android.R.id.content).setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                hideSoftKeyboard(v);
+                return false;
+            }
+        });
+
+        //Receive the filter to select workout by type
+        Intent intent = getIntent();
+        String filterId = intent.getStringExtra("filterkey");
+
+        //Search field and button
         lookupTv = (EditText) findViewById(R.id.lookupTv);
-        mainHolderView = (LinearLayout) findViewById(R.id.mainHolder);
         lookupBt = (Button) findViewById(R.id.lookupBt);
-        lookupBt.setOnClickListener(new LookupListener());
-        visibleWorkouts = new ArrayList<LinearLayout>();
+        lookupBt.setOnClickListener(this);
+
+        //Select workouts by filter received and put in workouts list
+        MyDBHandler dbHandler = getDb();
+        switch (filterId) {
+            case "all":
+                workouts = dbHandler.getAllWorkouts(); //Get all workouts
+                break;
+            case ("aerobic"):
+                workouts = dbHandler.getAllWorkoutsByType(0); //Get all aerobic workouts
+                break;
+            case ("strength"):
+                workouts = dbHandler.getAllWorkoutsByType(1); //Get all strength workouts
+                break;
+            case ("yoga"):
+                workouts = dbHandler.getAllWorkoutsByType(2); //Get all yoga workouts
+        }
+
+
+        ListView allWorkoutsLv = (ListView) findViewById(R.id.allWorkoutsLv);
+        ArrayAdapter<Workout> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, workouts);
+
+        allWorkoutsLv.setAdapter(adapter);
+
+        allWorkoutsLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Highlight last clicked view
+                if (lastSelectedView != null) {
+                    lastSelectedView.setBackgroundResource(R.color.white);
+                }
+                lastSelectedView = view;
+                view.setBackgroundResource(R.drawable.roundbgwhite);
+
+                //Open workout details
+                Workout workout = workouts.get(position);
+                Intent intent = new Intent();
+                intent.putExtra("key1", workout.getName());
+                intent.setClass(ViewWorkouts.this, ViewSingleWorkout.class);
+                startActivity(intent);
+            }
+        });
     }
 
+    public static void hideSoftKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
+    public void onClick (View v) {
+        switch (v.getId()) {
+            case R.id.lookupBt:
+                MyDBHandler db = getDb();
+                // Ignore if there is no input
+                if (lookupTv.getText().length() == 0) {
+                    return;
+                }
+                try {
+                    Workout foundWorkout = db.findFullWorkoutByName(cleanName(lookupTv.getText().toString()));
+                    // Ignore if there are no workouts found
+                    if (foundWorkout == null || foundWorkout.getName() == null) {
+                        Toast.makeText(ViewWorkouts.this, "Workout '"
+                                + lookupTv.getText().toString()
+                                + "' not found", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Intent intent2 = new Intent();
+                        intent2.putExtra("key1", foundWorkout.getName());
+                        intent2.setClass(ViewWorkouts.this, ViewSingleWorkout.class);
+                        startActivity(intent2);
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -61,146 +156,14 @@ public class ViewWorkouts extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class LookupListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            MyDBHandler dbHandler = getDb();
-
-            Button lookupBt = (Button)view;
-
-            if (lookupTv.getText().length() == 0) {
-              return;
-            }
-
-            Workout workout =
-                    dbHandler.findFullWorkoutByName(lookupTv.getText().toString());
-
-            if (workout != null) {
-                addWorkoutDisplay(workout);
-                lookupTv.setHint("");
-            } else {
-                lookupTv.setText("");
-                lookupTv.setHint("No Match Found!");
-            }
-            dbHandler.close();
-        }
-    }
-
     /*
-        DB
+        Helpers
      */
+    public String cleanName(String name) {
+        return name.trim().toLowerCase();
+    }
 
     public MyDBHandler getDb() {
         return new MyDBHandler(this, null, null, 1);
-    }
-
-    /**
-     * Gets expandable layout given a workout
-     * @param workout
-     */
-    public void addWorkoutDisplay(Workout workout) {
-        MyDBHandler dbHandler = getDb(); // for name lookups
-
-        // id
-        TextView idTv = new TextView(this);
-        idTv.setText(String.valueOf(workout.getId()));
-        mainHolderView.addView(idTv);
-
-        // name
-        TextView nameTitleTv = new TextView(this);
-        nameTitleTv.setText("Name");
-        mainHolderView.addView(nameTitleTv);
-
-        TextView nameTv = new TextView(this);
-        nameTv.setText(workout.getName());
-        mainHolderView.addView(nameTv);
-
-        // description
-        TextView descTitleTv = new TextView(this);
-        descTitleTv.setText("Description");
-        mainHolderView.addView(descTitleTv);
-
-        TextView descTv = new TextView(this);
-        descTv.setText(workout.getDescription());
-        mainHolderView.addView(descTv);
-
-        // workout type
-        TextView workoutTypeTitleTv = new TextView(this);
-        workoutTypeTitleTv.setText("Workout Type");
-        mainHolderView.addView(workoutTypeTitleTv);
-
-        TextView workoutTypeTv = new TextView(this);
-        workoutTypeTv.setText(dbHandler.findWorkoutTypeNameById(workout.getWorkoutTypeId()));
-        mainHolderView.addView(workoutTypeTv);
-
-        // muscle group
-        TextView muscleGroupTitleTv = new TextView(this);
-        muscleGroupTitleTv.setText("Muscle Group");
-        mainHolderView.addView(muscleGroupTitleTv);
-
-        TextView muscleGroupTv = new TextView(this);
-        muscleGroupTv.setText(dbHandler.findMuscleGroupNameById(workout.getMuscleGroupId()));
-        mainHolderView.addView(muscleGroupTv);
-
-        // pictures
-        TextView picTv = new TextView(this);
-        picTv.setText("Pictures");
-        mainHolderView.addView(picTv);
-
-        HorizontalScrollView imageScrollView = new HorizontalScrollView(this);
-        HorizontalScrollView.LayoutParams imgFileParams = new HorizontalScrollView.LayoutParams(HorizontalScrollView.LayoutParams.MATCH_PARENT,
-                HorizontalScrollView.LayoutParams.WRAP_CONTENT);
-        imageScrollView.setLayoutParams(imgFileParams);
-
-        LinearLayout horLinearImageView = new LinearLayout(this);
-        LinearLayout.LayoutParams horLinearImageViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        horLinearImageView.setLayoutParams(horLinearImageViewParams);
-        horLinearImageView.setOrientation(LinearLayout.HORIZONTAL);
-
-        // now add images
-        if (workout.getCheckPictures()) {
-            for (Bitmap img : workout.getPictures()) {
-                LinearLayout.LayoutParams imgParams = new LinearLayout.LayoutParams(100, 100);// width, height
-                ImageView imgBox = new ImageView(this);
-                imgBox.setLayoutParams(imgParams);
-                imgBox.setImageBitmap(img);
-                horLinearImageView.addView(imgBox);
-            }
-        }
-        imageScrollView.addView(horLinearImageView);
-        mainHolderView.addView(imageScrollView);
-
-        // main regions
-        if (workout.getCheckMainRegions()) {
-            String mainRegionsText = "";
-            for (String region : workout.getMainRegions()) {
-                mainRegionsText += region + " ";
-            }
-            TextView mainRegionsTitleTv = new TextView(this);
-            mainRegionsTitleTv.setText("Main Regions");
-            mainHolderView.addView(mainRegionsTitleTv);
-
-            TextView mainRegionsTv = new TextView(this);
-            mainRegionsTv.setText(mainRegionsText);
-            mainHolderView.addView(mainRegionsTv);
-        }
-
-        // sub regions
-        if (workout.getCheckSubRegions()) {
-            String subRegionsText = "";
-            for (String region : workout.getSubRegions()) {
-                subRegionsText += region + " ";
-            }
-            TextView subRegionsTitleTv = new TextView(this);
-            subRegionsTitleTv.setText("Sub Regions");
-            mainHolderView.addView(subRegionsTitleTv);
-
-            TextView subRegionsTv = new TextView(this);
-            subRegionsTv.setText(subRegionsText);
-            mainHolderView.addView(subRegionsTv);
-        }
-
-        dbHandler.close();
     }
 }
