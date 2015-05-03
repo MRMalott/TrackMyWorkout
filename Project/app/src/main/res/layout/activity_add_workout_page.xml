@@ -191,7 +191,8 @@
                 android:textColor="@color/green"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:layout_marginRight="5dp" />
+                android:layout_marginRight="5dp"
+                android:textSize="18sp" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -201,7 +202,8 @@
                 android:textColor="@color/green"
                 android:background="@drawable/roundedbutton"
                 android:paddingRight="10dp"
-                android:paddingLeft="10dp" />
+                android:paddingLeft="10dp"
+                android:textSize="18sp" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -212,7 +214,8 @@
                 android:background="@drawable/roundedbutton"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:layout_marginLeft="5dp" />
+                android:layout_marginLeft="5dp"
+                android:textSize="18sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -475,7 +478,8 @@
                 android:background="@drawable/roundedbutton"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+                android:textSize="22sp" />
         </LinearLayout>
 
     </LinearLayout>

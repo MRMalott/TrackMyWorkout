@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:id="@+id/displayWorkoutDescTv2"
-                android:textColor="@color/white" />
+                android:textColor="@color/green" />
         </LinearLayout>
 
         <LinearLayout

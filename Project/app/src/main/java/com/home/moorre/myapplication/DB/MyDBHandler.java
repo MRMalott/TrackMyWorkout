@@ -31,13 +31,13 @@ package com.home.moorre.myapplication.DB;
  */
 public class MyDBHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 53;
-    private static  final String DATABASE_NAME = "healthDB.db";
+    private static final String DATABASE_NAME = "healthDB.db";
 
-    private static  final String TABLE_WORKOUTS = "workouts";
+    private static final String TABLE_WORKOUTS = "workouts";
     // column names for workouts table
-    private static  final String COL_ID = "_id";
-    private static  final String COL_NAME = "_name";
-    private static  final String COL_DESC = "_description";
+    private static final String COL_ID = "_id";
+    private static final String COL_NAME = "_name";
+    private static final String COL_DESC = "_description";
     private static final String COL_WORKOUT_TYPE_ID = "_workoutTypeId";
     private static final String COL_MUSCLE_GROUP_ID = "_muscleGroupId";
     private static final String COL_CHECK_PICTURES = "_checkPictures";
@@ -85,6 +85,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     // Contains names to id values for different tables
     public static Map<String, Integer> REGION_IDS;
+
     static {
         Map<String, Integer> mapping = new HashMap<String, Integer>();
         // regions
@@ -107,6 +108,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     public static Map<String, Integer> GROUPING_IDS;
+
     static {
         Map<String, Integer> mapping = new HashMap<String, Integer>();
         // muscle group
@@ -121,6 +123,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     public static Map<String, Integer> WORKOUT_TYPE_IDS;
+
     static {
         Map<String, Integer> mapping = new HashMap<String, Integer>();
         // workout type
@@ -133,11 +136,12 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     /**
      * Says whether a workout (string) will use sets and reps
+     *
      * @param workoutType
      * @return true if its a workout type that uses sets
      */
     public static boolean doesWorkoutUseSets(int workoutType) {
-        List<Integer> workouts  = new ArrayList<Integer>();
+        List<Integer> workouts = new ArrayList<Integer>();
         workouts.add(WORKOUT_TYPE_IDS.get("anaerobic"));
         return workouts.contains(workoutType);
     }
@@ -148,7 +152,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     @Override
-    public  void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db) {
         /* -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
         Create workouts tables
         -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_- */
@@ -164,18 +168,18 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_WORKOUTS_TABLE);
 
         String CREATE_PICTURES_TABLE = "Create table " + TABLE_PICTURES + "(" +
-                COL_WORKOUT_ID + " integer not null references " + TABLE_WORKOUTS +"(" + COL_ID + ")," +
+                COL_WORKOUT_ID + " integer not null references " + TABLE_WORKOUTS + "(" + COL_ID + ")," +
                 COL_PIC + " blob not null," +
                 COL_MAIN + " integer not null)";
         db.execSQL(CREATE_PICTURES_TABLE);
 
-        String CREATE_WORKOUT_REGIONS_TABLE  = "Create table " + TABLE_WORKOUT_REGIONS + "(" +
-                COL_WORKOUT_ID + " integer not null references " + TABLE_WORKOUTS +"(" + COL_ID + ")," +
+        String CREATE_WORKOUT_REGIONS_TABLE = "Create table " + TABLE_WORKOUT_REGIONS + "(" +
+                COL_WORKOUT_ID + " integer not null references " + TABLE_WORKOUTS + "(" + COL_ID + ")," +
                 COL_REGION_ID + " integer not null," +
                 COL_MAIN + " integer not null)";
         db.execSQL(CREATE_WORKOUT_REGIONS_TABLE);
 
-        String CREATE_REGIONS_TABLE = "Create table " + TABLE_REGIONS  + "(" +
+        String CREATE_REGIONS_TABLE = "Create table " + TABLE_REGIONS + "(" +
                 COL_ID + " integer nul null primary key," +
                 COL_NAME + " text not null)";
         db.execSQL(CREATE_REGIONS_TABLE);
@@ -272,7 +276,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         // assure name is not present
         try {
             findWorkoutIdByName(workout.getName());
-        } catch(NullPointerException ne) {
+        } catch (NullPointerException ne) {
             // cleared to go
         }
 
@@ -287,7 +291,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         // find auto assigned id of workout
         try {
             workout.setId(findWorkoutIdByName(workout.getName()));
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("Couldn't find auto assigned workout id");
             throw e;
         }
@@ -296,7 +300,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         if (workout.getCheckPictures()) {
             try {
                 addWorkoutPictureInfo(workout);
-            } catch(Exception e ) {
+            } catch (Exception e) {
                 System.err.println("Couldn't add workout picture data");
                 throw e;
             }
@@ -305,7 +309,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         // insert into workout regions table
         try {
             addWorkoutRegionsInfo(workout);
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Couldn't add workout regions data");
             throw e;
         }
@@ -383,20 +387,20 @@ public class MyDBHandler extends SQLiteOpenHelper {
     public void addFullLog(WorkoutLog log) throws Exception {
         try {
             addLogInformation(log);
-        } catch(Exception e ) {
+        } catch (Exception e) {
             System.out.println("!!!!\nFailed in addFullLog");
             throw e;
         }
 
         try {
             addInputs(log);
-        }catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("!!!!\nFailed in addInputs");
             throw e;
         }
     }
 
-    private void addLogInformation(WorkoutLog log) throws Exception{
+    private void addLogInformation(WorkoutLog log) throws Exception {
         SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
 
         ContentValues logInfo = new ContentValues();
@@ -411,7 +415,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
             db.insert(TABLE_LOGS, null, logInfo);
 
             log.setId(findLastLogId()); // Find the auto incremented (largest) id
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
@@ -419,11 +423,11 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    private void addInputs(WorkoutLog log) throws Exception{
+    private void addInputs(WorkoutLog log) throws Exception {
         SQLiteDatabase db = this.getWritableDatabase(); // open db for writting
 
         // Determine which type the 'set' is
-        if(!log.usesSets()) {
+        if (!log.usesSets()) {
             ContentValues aerobicInputs = new ContentValues();
             aerobicInputs.put(COL_LOG_ID, log.getId());
             aerobicInputs.put(COL_FEET, log.getAerobic().getFeet());
@@ -431,7 +435,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
             db.insert(TABLE_AEROBIC_INPUTS, null, aerobicInputs);
         } else {
             List<Set> sets = log.getAnaerobic().getSets();
-            for(int pos = 0; pos < sets.size(); pos++) {
+            for (int pos = 0; pos < sets.size(); pos++) {
                 ContentValues setInput = new ContentValues();
                 setInput.put(COL_LOG_ID, log.getId());
                 setInput.put(COL_SET_NUMBER, pos + 1);
@@ -439,7 +443,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
                 setInput.put(COL_WEIGHT, sets.get(pos).getWeight());
                 try {
                     db.insert(TABLE_SETS, null, setInput);
-                } catch(Exception e) {
+                } catch (Exception e) {
                     System.out.println("Tried to add set + " + pos + " : " + sets.get(pos).getReps() + " " + sets.get(pos).getWeight());
                     throw e;
                 }
@@ -474,7 +478,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         List<Workout> workouts = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase(); // open db for reading
         String query = "Select * from " + TABLE_WORKOUTS + " where " + COL_WORKOUT_TYPE_ID +
-                       " = \"" + type + "\"" + " Order By " + COL_NAME;
+                " = \"" + type + "\"" + " Order By " + COL_NAME;
 
         Cursor cursor = db.rawQuery(query, null);
 
@@ -507,6 +511,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
         return id;
     }
+
     public String findWorkoutNameById(int id) throws NullPointerException {
         SQLiteDatabase db = this.getReadableDatabase();
         String name;
@@ -534,8 +539,8 @@ public class MyDBHandler extends SQLiteOpenHelper {
     public Workout findFullWorkoutByName(String workoutName) {
         Workout workout = findWorkoutInfoByName(workoutName);
 
-        if(workout ==  null) {
-          return null;
+        if (workout == null) {
+            return null;
         } // send back null if none found
 
         if (!workout.getCheckPictures()) {
@@ -558,7 +563,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     public Workout findWorkoutInfoByName(String workoutName) {
-        String query = "Select * from " + TABLE_WORKOUTS +  " where " +
+        String query = "Select * from " + TABLE_WORKOUTS + " where " +
                 COL_NAME + " = \"" + workoutName + "\"";
 
         SQLiteDatabase db = this.getReadableDatabase(); // open db for reading
@@ -641,7 +646,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             cursor.moveToFirst();
 
-            while(!cursor.isAfterLast()) {
+            while (!cursor.isAfterLast()) {
                 //Bitmap bm = BitmapFactory.decodeByteArray(cursor.getBlob(1), 0, cursor.getBlob(1).length);
                 //byte[] decodedString = Base64.decode(cursor.getBlob(1), Base64.DEFAULT);
                 //InputStream inputStream = new ByteArrayInputStream((decodedString));
@@ -673,6 +678,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     /**
      * Could be two separate calls but this would be inefficient
+     *
      * @return Array with two lists of strings, one for main and another for sub regions
      */
     public ArrayList<ArrayList<String>> findRegionNamesByWorkoutId(int workoutId) {
@@ -749,7 +755,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
                 // WOW I went through SO much trouble to find out that I wasn't adding the temp log to the list
                 logs.add(tempLog);
-            } while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
@@ -762,7 +768,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
         // Collect individual logs'
         for (WorkoutLog log : logs) {
-            if(!log.usesSets()) {
+            if (!log.usesSets()) {
                 log.setAerobic(findAerobicInputByLogId(log.getId()));
             } else {
                 log.setAnaerobic(findAnaerobicInputByLogId(log.getId()));
@@ -780,7 +786,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             lookupInput.setLogId(id);
             lookupInput.setSeconds(cursor.getInt(1));
             lookupInput.setFeet(cursor.getInt(2));
@@ -802,10 +808,10 @@ public class MyDBHandler extends SQLiteOpenHelper {
         lookupInput.setLogId(id);
 
         // Get the different sets
-        if(cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             do {
                 sets.add(new Set(cursor.getInt(2), cursor.getDouble(3))); /* correct order? */
-            }while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         lookupInput.setSets(sets);
 
@@ -835,7 +841,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String query = "Select " + COL_WORKOUT_DATE + " from " + TABLE_LOGS + " order by " + COL_WORKOUT_DATE + " desc limit 1";
 
         Cursor resultsCursor = db.rawQuery(query, null);
-        if(resultsCursor.moveToFirst()) {
+        if (resultsCursor.moveToFirst()) {
             date = resultsCursor.getLong(0);
         }
 
@@ -856,16 +862,91 @@ public class MyDBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase(); // Open db for changing
         Cursor cursor = db.rawQuery(query, null);
 
+        /*
+        ERROR: May not be deleting the full workout tables
+         */
         if (cursor.moveToFirst()) {
             String id = cursor.getString(0);
             // question marks correlate to spots in string array
-            db.delete(TABLE_WORKOUTS, COL_ID + " = ?", new String[] {id});
+            db.delete(TABLE_WORKOUTS, COL_ID + " = ?", new String[]{id});
             cursor.close();
             result = true;
         }
 
         db.close();
         return result;
+    }
+
+    /**
+     * will have to be sure to pass this value along in the layout
+     *
+     * @param id of log
+     * @return whether it was successful or not
+     */
+    public boolean deleteLog(int id) {
+        boolean result = false;
+        String logQuery = "Select * from " + TABLE_LOGS + " where " +
+                COL_ID + " = " + id;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor logCursor = db.rawQuery(logQuery, null);
+
+        if (logCursor.moveToFirst()) {
+            // log exists now find delete the sub tables
+            boolean usesSets = logCursor.getInt(5) == 0 ? false : true;
+
+            if (usesSets) {
+                String setQuery = "Select * from " + TABLE_SETS + " where " +
+                        COL_LOG_ID + " = " + id;
+                Cursor setCursor = db.rawQuery(setQuery, null);
+
+                if (setCursor.moveToFirst()) {
+                    db.delete(TABLE_SETS, COL_LOG_ID + " = ?", new String[]{String.valueOf(id)});
+                }
+                setCursor.close();
+            } else {
+                String aeQuery = "Select * from " + TABLE_AEROBIC_INPUTS + " where " +
+                        COL_LOG_ID + " = " + id;
+                Cursor aeCursor = db.rawQuery(aeQuery, null);
+                if (aeCursor.moveToFirst()) {
+                    db.delete(TABLE_AEROBIC_INPUTS, COL_LOG_ID + " = ?", new String[]{String.valueOf(id)});
+                }
+                aeCursor.close();
+            }
+
+            db.delete(TABLE_LOGS, COL_ID + " = ?", new String[]{String.valueOf(id)});
+            logCursor.close();
+            result = true;
+        }
+
+        db.close();
+        return result;
+    }
+
+    public boolean simpleDeleteLog(int id) {
+        boolean result = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            db.delete(TABLE_LOGS, COL_ID + " = ?", new String[]{String.valueOf(id)});
+
+            try {
+                db.delete(TABLE_SETS, COL_LOG_ID + " = ?", new String[]{String.valueOf(id)});
+            } catch (Exception setsErr) {
+                setsErr.printStackTrace();
+            }
+
+            try {
+                db.delete(TABLE_AEROBIC_INPUTS, COL_LOG_ID + " = ?", new String[]{String.valueOf(id)});
+            } catch (Exception aerobicErr) {
+                aerobicErr.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = false;
+        } finally {
+            db.close();
+            return result;
+        }
     }
 
     // Get random workout (returns workout name)
@@ -893,16 +974,15 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     //Check for any workouts in db
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         SQLiteDatabase db = this.getReadableDatabase(); // open db for reading
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_WORKOUTS, null);
 
-        if(cursor.getCount() == 0){
+        if (cursor.getCount() == 0) {
             cursor.close();
             db.close();
             return true;
-        }
-        else{
+        } else {
             cursor.close();
             db.close();
             return false;
@@ -910,21 +990,156 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     //Check if db contains workouts by workout type
-    public boolean isTypeEmpty(int type){
+    public boolean isTypeEmpty(int type) {
         SQLiteDatabase db = this.getReadableDatabase(); // open db for reading
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_WORKOUTS
-                                    + " where " + COL_WORKOUT_TYPE_ID
-                                    + " = \"" + type + "\"", null);
+                + " where " + COL_WORKOUT_TYPE_ID
+                + " = \"" + type + "\"", null);
 
-        if(cursor.getCount() == 0){
+        if (cursor.getCount() == 0) {
             cursor.close();
             db.close();
             return true;
-        }
-        else{
+        } else {
             cursor.close();
             db.close();
             return false;
+        }
+    }
+
+    /*
+    Update querries
+    myDB.update("titles", args, strFilter, new String[] { Integer.toString(ID) })
+     */
+
+    public boolean updateWorkout(Workout workout) {
+        boolean result = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+        int id = workout.getId();
+
+        try {
+            String filter = COL_ID + " = " + id;
+
+            ContentValues args = new ContentValues();
+            args.put(COL_NAME, workout.getName());
+            args.put(COL_DESC, workout.getDescription());
+            args.put(COL_WORKOUT_TYPE_ID, workout.getWorkoutTypeId());
+            args.put(COL_MUSCLE_GROUP_ID, workout.getMuscleGroupId());
+            args.put(COL_CHECK_MAIN_REGIONS, workout.getCheckMainRegions());
+            args.put(COL_CHECK_SUB_REGIONS, workout.getCheckSubRegions());
+            args.put(COL_CHECK_PICTURES, workout.getCheckPictures());
+
+            db.update(TABLE_WORKOUTS, args, filter, new String[]{Integer.toString(id)});
+            db.close();
+
+            updatePictures(workout);
+
+            updateRegions(workout);
+
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (db.isOpen()) { // do this incase update fails
+                db.close();
+            }
+        }
+
+
+        return result;
+    }
+
+    public void updatePictures(Workout workout) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            db.delete(TABLE_PICTURES, COL_WORKOUT_ID + " = ?", new String[]{String.valueOf(workout.getId())});
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+
+        // now add pics in
+        try {
+            addWorkoutPictureInfo(workout);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRegions(Workout workout) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            db.delete(TABLE_WORKOUT_REGIONS, COL_WORKOUT_ID + " = ?", new String[]{String.valueOf(workout.getId())});
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+
+        try {
+            addWorkoutRegionsInfo(workout);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean updateLog(WorkoutLog log) {
+        boolean result = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+        int id = log.getId();
+
+        try {
+            String filter = COL_ID + " = " + id;
+
+            ContentValues args = new ContentValues();
+            args.put(COL_CREATION_DATE, log.getCreationDate());
+            args.put(COL_WORKOUT_DATE, log.getWorkoutDate());
+            args.put(COL_NOTES, log.getNotes());
+            args.put(COL_WORKOUT_ID, log.getWorkoutId());
+            args.put(COL_WORKOUT_NAME, log.getWorkoutName());
+            args.put(COL_IS_AEROBIC, log.usesSets() == false ? 1 : 0);
+
+            db.update(TABLE_WORKOUTS, args, filter, new String[]{Integer.toString(id)});
+            db.close();
+
+            updateInputTables(log);
+
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (db.isOpen()) {
+                db.close();
+            }
+        }
+
+        return result;
+    }
+
+    public void updateInputTables(WorkoutLog log) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            db.delete(TABLE_AEROBIC_INPUTS, COL_LOG_ID + " = ?" + log.getId(), new String[] {String.valueOf(log.getId())});
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            db.delete(TABLE_SETS, COL_LOG_ID + " = ?" + log.getId(), new String[] {String.valueOf(log.getId())});
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+
+        try {
+            addInputs(log);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
 }

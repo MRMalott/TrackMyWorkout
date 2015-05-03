@@ -4,35 +4,36 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.home.moorre.myapplication.Logs.AddLogPage">
+    tools:context="com.home.moorre.myapplication.Logs.AddLogPage"
+    android:background="@color/black">
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select workout"
-                android:layout_marginRight="10dp" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="40sp"
-                android:text="Select Workout"
+                android:text="*Select Workout"
                 android:id="@+id/selectWorkoutBt"
-                android:onClick="selectWorkout" />
+                android:onClick="selectWorkout"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/roundedbutton"
+                android:textSize="22sp"
+                android:textColor="@color/green"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/selectedWorkoutArea">
@@ -40,20 +41,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Selected Workout"
-                android:layout_marginRight="5dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/selectWorkoutNameTv" />
+                android:id="@+id/selectWorkoutNameTv"
+                android:textColor="@color/white"
+                android:layout_gravity="center_horizontal"
+                android:textSize="26sp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp" />
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select the date"
-            android:layout_marginRight="5dp" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -66,7 +60,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/addLogDate"
                 android:datePickerMode="spinner"
-                android:calendarViewShown="false" />
+                android:calendarViewShown="false"
+                android:background="@drawable/roundedbgwhitenoborder" />
 
         </LinearLayout>
 
@@ -81,16 +76,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Notes" />
+            android:text="*Notes"
+            android:textColor="@color/green"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp" />
 
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/hint_foreground_material_dark"
+            android:background="@drawable/roundedbgwhitenoborder"
             android:id="@+id/notesEV"
             android:inputType="textMultiLine"
             android:maxLines="4"
-            android:nestedScrollingEnabled="true" />
+            android:nestedScrollingEnabled="true"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp" />
 
         <Button
             android:layout_width="wrap_content"
@@ -98,7 +100,14 @@
             android:id="@+id/addLogBt"
             android:onClick="addLog"
             android:text="Add log"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:textSize="22sp"
+            android:background="@drawable/roundedbutton"
+            android:textColor="@color/green"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
 
     </LinearLayout>
 </ScrollView>

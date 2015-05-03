@@ -8,6 +8,8 @@ public class WorkoutLog {
     private long _workoutDate;
     private long _creationDate;
     private Workout _loggedWorkout;
+    private String workoutName;
+    private int workoutId;
     private AerobicInput _aerobic;
     private AnaerobicInput _anaerobic;
     private boolean _usesSets;
@@ -15,6 +17,23 @@ public class WorkoutLog {
 
     public void WorkoutLog() {
 
+    }
+
+
+    public String getWorkoutName() {
+        return workoutName;
+    }
+
+    public void setWorkoutName(String workoutName) {
+        this.workoutName = workoutName;
+    }
+
+    public int getWorkoutId() {
+        return workoutId;
+    }
+
+    public void setWorkoutId(int workoutId) {
+        this.workoutId = workoutId;
     }
 
     public int getId() {
